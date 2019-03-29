@@ -46,6 +46,7 @@
   <build_depend>dynamic_graph_bridge</build_depend>
   <build_depend>pal_hardware_interfaces</build_depend>
   <build_depend>rostest</build_depend>
+  <build_depend>talos_gazebo</build_depend>
 
   <run_depend>roscpp</run_depend>
   <run_depend>control_msgs</run_depend>
@@ -59,6 +60,7 @@
   <run_depend>message_runtime</run_depend>
   <run_depend>dynamic_graph_bridge</run_depend>
   <run_depend>pal_hardware_interfaces</run_depend>
+  <run_depend>talos_gazebo</run_depend>
   <!-- The export tag contains other, unspecified, tags -->
   <export>
   </export>
