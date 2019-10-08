@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#! /usr/bin/env python
 import sys
 import rospy
 import rospkg
@@ -50,7 +50,8 @@ class TestSoTTalos(unittest.TestCase):
 
             # get the file path for rospy_tutorials
             lpath = rospack.get_path('pyrene_integration_tests')
-            initCode = open( lpath + '/scripts/appli.py', "r").read().split("\n")
+            print(lpath)
+            initCode = open( lpath + '/../../lib/pyrene_integration_tests/appli.py', "r").read().split("\n")
             
             rospy.loginfo("Stack of Tasks launched")
 

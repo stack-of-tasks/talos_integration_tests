@@ -4,8 +4,6 @@
   <arg name="robot" default="full_v2"/> <!--full_v1, full_v2, lower_body-->
   <arg name="foot_collision" default="default"/>
 
-  <!-- Load default controllers -->
-  <include file="$(find talos_controller_configuration)/launch/bringup_controllers.launch" />
 
   <!-- Robot state publisher -->
   <node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher">

@@ -95,7 +95,10 @@ include_directories(
 
 #ADD_EXECUTABLE(roscontrol-sot-parse-log
 #  src/roscontrol-sot-parse-log.cc)
-#install(TARGETS roscontrol-sot-parse-log DESTINATION bin )
+catkin_install_python(PROGRAMS
+  scripts/test_kine.py
+  scripts/appli.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 foreach(dir launch tests)
   install(DIRECTORY ${dir}
