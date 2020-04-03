@@ -7,12 +7,11 @@ import unittest
 import math
 
 from std_srvs.srv import *
-from dynamic_graph_bridge.srv import *
 from dynamic_graph_bridge_msgs.srv import *
 
 from gazebo_msgs.srv import *
 
-PKG='pyrene_integration_tests'
+PKG_NAME='talos_integration_tests'
 
 class TestSoTTalos(unittest.TestCase):
     
@@ -49,9 +48,9 @@ class TestSoTTalos(unittest.TestCase):
             rospack = rospkg.RosPack()
 
             # get the file path for rospy_tutorials
-            lpath = rospack.get_path('pyrene_integration_tests')
+            lpath = rospack.get_path(PKG_NAME)
             print(lpath)
-            initCode = open( lpath + '/../../lib/pyrene_integration_tests/appli.py', "r").read().split("\n")
+            initCode = open( lpath + '/../../lib/'+PKG_NAME+'/appli.py', "r").read().split("\n")
             
             rospy.loginfo("Stack of Tasks launched")
 
@@ -61,7 +60,7 @@ class TestSoTTalos(unittest.TestCase):
             self.runCommandClient("gotoNd(taskRH,target,'111',(4.9,0.9,0.01,0.9))")
             self.runCommandClient("sot.push(taskRH.task.name)")
             
-            time.sleep(5)
+            time.sleep(10)
     
             gzGetLinkPropReq = rospy.ServiceProxy('/gazebo/get_link_state',GetLinkState)
             gzGetLinkPropResp = gzGetLinkPropReq(link_name='gripper_right_fingertip_1_link')
@@ -69,9 +68,9 @@ class TestSoTTalos(unittest.TestCase):
             f.write("x:"+str(gzGetLinkPropResp.link_state.pose.position.x)+"\n")
             f.write("y:"+str(gzGetLinkPropResp.link_state.pose.position.y)+"\n")
             f.write("z:"+str(gzGetLinkPropResp.link_state.pose.position.z)+"\n")
-            dx=gzGetLinkPropResp.link_state.pose.position.x-0.4757
-            dy=gzGetLinkPropResp.link_state.pose.position.y+0.3172
-            dz=gzGetLinkPropResp.link_state.pose.position.z-0.8010
+            dx=gzGetLinkPropResp.link_state.pose.position.x-0.5723
+            dy=gzGetLinkPropResp.link_state.pose.position.y+0.2885
+            dz=gzGetLinkPropResp.link_state.pose.position.z-0.7745
             ldistance = math.sqrt(dx*dx+dy*dy+dz*dz)
             f.write("dist:"+str(ldistance))
             f.close()
@@ -86,4 +85,4 @@ class TestSoTTalos(unittest.TestCase):
 
 if __name__ == '__main__':
     import rostest
-    rostest.rosrun(PKG,'test_sot_talos',TestSoTTalos)
+    rostest.rosrun(PKG_NAME,'test_sot_talos_kine',TestSoTTalos)
