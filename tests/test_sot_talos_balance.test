@@ -1,0 +1,7 @@
+<launch>
+
+  <!-- Launching the python test -->
+  <test test-name="test_sot_talos_balance" pkg="talos_integration_tests" type="start_sot_talos_balance.py" time-limit="120.0" />
+  
+</launch>
+

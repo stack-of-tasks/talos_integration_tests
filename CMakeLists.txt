@@ -72,7 +72,7 @@ endforeach()
 
 # Testing part
 if(CATKIN_ENABLE_TESTING)
-  catkin_add_nosetests(scripts/test_kine.py)
   find_package(rostest REQUIRED)
   add_rostest(tests/test_kine.test)
+  add_rostest(tests/test_sot_talos_balance.test)
 endif()

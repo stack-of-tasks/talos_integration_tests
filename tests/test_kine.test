@@ -1,14 +1,7 @@
 <launch>
-  <!-- Launching talos simulation -->
-  <include file="$(find pyrene_integration_tests)/launch/talos_gazebo_minimal.launch">
-    <arg name="gui" value="false"/>
-  </include>
-
-  <!-- Launching stack-of-tasks for Talos -->
-  <include file="$(find roscontrol_sot_talos)/launch/sot_talos_controller_gazebo.launch"/>
 
   <!-- Launching the python test -->
-  <test test-name="test_kine_py" pkg="pyrene_integration_tests" type="test_kine.py" time-limit="120.0" />
+  <test test-name="test_sot_talos_kine" pkg="talos_integration_tests" type="start_talos_gazebo_kine.py" time-limit="120.0" />
   
 </launch>
 
