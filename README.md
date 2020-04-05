@@ -8,7 +8,7 @@ mkdir -p test_ws/src
 cd tests_ws/src
 catkin_init_workspace
 git clone --recursive https://github.com/stack-of-tasks/talos_integration_tests.git
-catkin_make_install
+catkin build talos_integration_tests
 ```
 
 Preparing your environment variables:
