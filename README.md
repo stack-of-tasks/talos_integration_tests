@@ -1,7 +1,15 @@
 # Talos integration-tests
 
 This project is for integration tests on Pyrene aka TALOS-001.
+The main target of this package is to test the functional level of various software packages.
+The API to access the robot are compatible. What is not currently tested is the overall CPU bandwith.
+The adequation between the real system and the one currently simulated depends on the current limitation
+of the algorithm and the weights used to in the simulator.
 
+In this specific context PID gains for position control are not the one provided by PAL-robotics.
+They are much more high and provide a more rigid behavior that was found experimentally closer to reality for some part
+of the robot. However, for now the flexibility in the hip found in real TALOS humanoid robots is not simulated.
+    
 # Setup
 ```
 mkdir -p test_ws/src
