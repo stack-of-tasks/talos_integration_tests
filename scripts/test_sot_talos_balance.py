@@ -14,7 +14,7 @@ from gazebo_msgs.srv import *
 PKG_NAME='talos_integration_tests'
 
 '''Test CoM admittance control as described in paper, with pre-loaded movements'''
-from sot_talos_balance.utils.run_test_utils import ask_for_confirmation, \
+from sot_talos_balance.utils.run_test_utils import  \
     run_ft_calibration, run_test, runCommandClient
 
 # get an instance of RosPack with the default search paths

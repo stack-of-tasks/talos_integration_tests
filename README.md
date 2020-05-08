@@ -24,6 +24,7 @@ Preparing your environment variables:
 source ./test_ws/install/setup.bash
 source $HOME/bin/setup-opt-robotpkg.sh
 ```
+
 # First integration tests
 
 ## Kinematic SoT on gazebo
@@ -49,4 +50,12 @@ The robot is supposed to walk forward 2.8 m and reached position [2.8331,0.0405,
 There is a you tube video showing what to expect:
 
 [![Alt text](http://i3.ytimg.com/vi/Hd46shZ22dM/hqdefault.jpg)](https://youtu.be/Hd46shZ22dM)
+
+## Real time on-line walking on gazebo
+
+To launch:
+```
+rostest talos_integration_tests test_online_walking.test
+```
+The robot is supposed to walk forward 2.8 m and reached position [2.12,0.012,1.00]
 

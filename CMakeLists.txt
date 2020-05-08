@@ -58,10 +58,13 @@ add_project_dependency(dynamic_graph_bridge REQUIRED)
 catkin_install_python(PROGRAMS
   scripts/appli.py
   scripts/appli_dcmZmpControl_file.py
+  scripts/appli_online_walking.py
   scripts/start_talos_gazebo_kine.py
   scripts/start_sot_talos_balance.py
+  scripts/start_sot_online_walking.py
   scripts/test_kine.py
   scripts/test_sot_talos_balance.py
+  scripts/test_online_walking.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 foreach(dir launch tests)
@@ -75,4 +78,5 @@ if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
   add_rostest(tests/test_kine.test)
   add_rostest(tests/test_sot_talos_balance.test)
+  add_rostest(tests/test_online_walking.test)  
 endif()
