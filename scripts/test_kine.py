@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 import sys
 import rospy
-import rospkg
 import time
 from os.path import abspath, dirname, join
 
@@ -42,12 +41,7 @@ def runTest():
         runCommandStartDynamicGraph = rospy.ServiceProxy('start_dynamic_graph',
                                                          Empty)
 
-        # get an instance of RosPack with the default search paths
-        rospack = rospkg.RosPack()
-
         # get the file path for rospy_tutorials
-        lpath = rospack.get_path(PKG_NAME)
-        print(lpath)
         initCode = open(join(dirname(abspath(__file__)), 'appli.py'), "r").read().split("\n")
 
         rospy.loginfo("Stack of Tasks launched")
