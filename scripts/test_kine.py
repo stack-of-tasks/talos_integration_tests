@@ -3,6 +3,7 @@ import sys
 import rospy
 import rospkg
 import time
+from os.path import abspath, dirname, join
 
 
 from std_srvs.srv import *
@@ -47,8 +48,7 @@ def runTest():
         # get the file path for rospy_tutorials
         lpath = rospack.get_path(PKG_NAME)
         print(lpath)
-        initCode = open( lpath + '/../../lib/'+PKG_NAME+'/appli.py',\
-                         "r").read().split("\n")
+        initCode = open(join(dirname(abspath(__file__)), 'appli.py'), "r").read().split("\n")
 
         rospy.loginfo("Stack of Tasks launched")
 

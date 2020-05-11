@@ -5,6 +5,7 @@ import rospkg
 import time
 import unittest
 import math
+from os.path import abspath, dirname, join
 
 from std_srvs.srv import *
 from dynamic_graph_bridge_msgs.srv import *
@@ -23,8 +24,7 @@ rospack = rospkg.RosPack()
 # get the file path for rospy_tutorials
 lpath = rospack.get_path(PKG_NAME)
 print(lpath)
-appli_file_name =lpath + '/../../lib/'+PKG_NAME+\
-    '/appli_dcmZmpControl_file.py'
+appli_file_name = join(dirname(abspath(__file__)), 'appli_dcmZmpControl_file.py')
 
 time.sleep(2)
 rospy.loginfo("Stack of Tasks launched")
