@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 import sys
 import rospy
-import rospkg
 import time
 import unittest
 import math
@@ -18,12 +17,7 @@ PKG_NAME='talos_integration_tests'
 from sot_talos_balance.utils.run_test_utils import  \
     run_ft_calibration, run_test, runCommandClient
 
-# get an instance of RosPack with the default search paths
-rospack = rospkg.RosPack()
-
 # get the file path for rospy_tutorials
-lpath = rospack.get_path(PKG_NAME)
-print(lpath)
 appli_file_name = join(dirname(abspath(__file__)), 'appli_dcmZmpControl_file.py')
 
 time.sleep(2)
