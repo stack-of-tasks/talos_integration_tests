@@ -29,7 +29,7 @@ locals()['contactRF'] = contactRF
 
 
 from dynamic_graph import plug
-from dynamic_graph.sot.core import SOT
+from dynamic_graph.sot.core.sot import SOT
 sot = SOT('sot')
 sot.setSize(robot.dynamic.getDimension())
 plug(sot.control,robot.device.control)
