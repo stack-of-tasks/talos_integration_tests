@@ -9,7 +9,7 @@ of the algorithm and the weights used to in the simulator.
 In this specific context PID gains for position control are not the one provided by PAL-robotics.
 They are much more high and provide a more rigid behavior that was found experimentally closer to reality for some part
 of the robot. However, for now the flexibility in the hip found in real TALOS humanoid robots is not simulated.
-    
+
 # Setup
 ```
 mkdir -p test_ws/src
@@ -59,3 +59,22 @@ rostest talos_integration_tests test_online_walking.test
 ```
 The robot is supposed to walk forward 2.8 m and reached position [2.12,0.012,1.00]
 
+
+# Docker
+
+```
+xhost +local:
+# 18.04 / melodic
+docker build -t talos-integration-tests:18.04 .
+docker run --rm --net=host --runtime=nvidia -e DISPLAY -it talos-integration-tests:18.04
+# 16.04 / kinetic
+docker build -t talos-integration-tests:16.04 --build-arg UBUNTU_VERSION=16.04 --build-arg UBUNTU=xenial --build-arg ROS_DISTRO=kinetic .
+docker run --rm --net=host --runtime=nvidia -e DISPLAY -it talos-integration-tests:16.04
+```
+
+Once in the container:
+```
+source devel/setup.bash
+rostest talos_integration_tests test_kine.test
+rostest talos_integration_tests test_sot_talos_balance.test
+```
