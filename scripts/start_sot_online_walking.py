@@ -35,7 +35,7 @@ class TestSoTTalos(unittest.TestCase):
         if ldistance<0.009:
             self.assertTrue(True,msg="Converged to the desired position")
         else:
-            self.assertFalse(False,
+            self.assertFalse(True,
                              msg="Did not converged to the desired position")
 
     def runTest(self):
@@ -125,6 +125,7 @@ class TestSoTTalos(unittest.TestCase):
                 # If it is finished then find exit status.
                 if test_sot_online_walking_process.exit_code != 0:
                     exit_status = "test_online_walking failed"
+                    self.assertFalse(True,exit_status)
                 else:
                     exit_status=None
 

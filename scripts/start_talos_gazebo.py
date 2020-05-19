@@ -66,7 +66,6 @@ launch_roscontrol_sot_talos =roslaunch.parent.ROSLaunchParent(uuid,
 launch_roscontrol_sot_talos.start()
 rospy.loginfo("roscontrol_sot_talos started")
 
-rospy.
 
 rospy.spin()
 

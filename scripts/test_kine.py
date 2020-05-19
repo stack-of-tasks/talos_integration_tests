@@ -8,20 +8,18 @@ from os.path import abspath, dirname, join
 from std_srvs.srv import *
 from dynamic_graph_bridge_msgs.srv import *
 
-PKG_NAME='talos_integration_tests'
-
 runCommandClient = rospy.ServiceProxy('run_command', RunCommand)
 
-def launchScript(code,title,description = ""):
-    rospy.loginfo(title)
-    rospy.loginfo(code)
-    for line in code:
-        if line != '' and line[0] != '#':
-            print line
-            answer = runCommandClient(str(line))
-            rospy.logdebug(answer)
-            print answer
-        rospy.loginfo("...done with "+title)
+from sot_talos_balance.utils.run_test_utils import runCommandClient
+
+def handleRunCommandClient(code):
+    out = runCommandClient(code)
+
+    if out.standarderror:
+        print("standarderror: " + out.standarderror)
+        sys.exit(-1)
+
+PKG_NAME='talos_integration_tests'
 
 def runTest():
     # Waiting for services
@@ -41,16 +39,16 @@ def runTest():
         runCommandStartDynamicGraph = rospy.ServiceProxy('start_dynamic_graph',
                                                          Empty)
 
-        # get the file path for rospy_tutorials
-        initCode = open(join(dirname(abspath(__file__)), 'appli.py'), "r").read().split("\n")
-
         rospy.loginfo("Stack of Tasks launched")
 
+        handleRunCommandClient('from talos_integration_tests.appli import init_appli')
+        handleRunCommandClient('init_sot_talos_balance(robot)')
+
         launchScript(initCode,'initialize SoT')
-        runCommandStartDynamicGraph()
-        runCommandClient("target = (0.5,-0.2,1.0)")
-        runCommandClient("gotoNd(taskRH,target,'111',(4.9,0.9,0.01,0.9))")
-        runCommandClient("sot.push(taskRH.task.name)")
+        handleRunCommandStartDynamicGraph()
+        handleRunCommandClient("target = (0.5,-0.2,1.0)")
+        handleRunCommandClient("gotoNd(taskRH,target,'111',(4.9,0.9,0.01,0.9))")
+        handleRunCommandClient("sot.push(taskRH.task.name)")
 
         time.sleep(10)
 
