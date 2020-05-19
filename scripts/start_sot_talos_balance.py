@@ -35,14 +35,14 @@ class TestSoTTalos(unittest.TestCase):
         if ldistance<0.009:
             self.assertTrue(True,msg="Converged to the desired position")
         else:
-            self.assertFalse(False,
+            self.assertFalse(True,
                              msg="Did not converged to the desired position")
 
     def runTest(self):
         # Start roscore
         import subprocess
         roscore = subprocess.Popen('roscore')
-        time.sleep(1)
+        time.sleep(2)
 
         # Get the path to talos_data
         arospack = rospkg.RosPack()
@@ -58,11 +58,9 @@ class TestSoTTalos(unittest.TestCase):
             'enable_leg_passive:=false'
            ]
         roslaunch_args = cli_args[1:]
-        roslaunch_file = [(roslaunch.rlutil.resolve_launch_arguments\
-                           (cli_args)[0], roslaunch_args)]
+        roslaunch_file = [(roslaunch.rlutil.resolve_launch_arguments(cli_args)[0], roslaunch_args)]
 
-        launch_gazebo_alone = roslaunch.parent.\
-            ROSLaunchParent(uuid, roslaunch_file)
+        launch_gazebo_alone = roslaunch.parent.ROSLaunchParent(uuid, roslaunch_file)
         launch_gazebo_alone.start()
         rospy.loginfo("talos_gazebo_alone started")
 
@@ -125,6 +123,7 @@ class TestSoTTalos(unittest.TestCase):
                 # If it is finished then find exit status.
                 if test_sot_talos_balance_process.exit_code != 0:
                     exit_status = "test_sot_talos_balance failed"
+                    self.assertFalse(True,exit_status)
                 else:
                     exit_status=None
 

@@ -9,7 +9,13 @@ from os.path import abspath, dirname, join
 from std_srvs.srv import *
 from dynamic_graph_bridge_msgs.srv import *
 
-from gazebo_msgs.srv import *
+
+def handleRunCommandClient(code):
+    out = runCommandClient(code)
+
+    if out.standarderror:
+        print("standarderror: " + out.standarderror)
+        sys.exit(-1)
 
 PKG_NAME='talos_integration_tests'
 
@@ -30,25 +36,29 @@ rospy.loginfo("Waiting for run_command")
 rospy.wait_for_service('/run_command')
 rospy.loginfo("...ok")
 
-runCommandClient('test_folder = "' + test_folder + '"')
+handleRunCommandClient('test_folder = "' + test_folder + '"')
 
-run_test(appli_file_name,verbosity=1,interactive=False)
+handleRunCommandClient('from talos_integration_tests.appli_dcmZmpControl_file import init_sot_talos_balance')
+handleRunCommandClient('init_sot_talos_balance(robot,\''+test_folder+'\')')
 time.sleep(5)
+runCommandStartDynamicGraph = rospy.ServiceProxy('start_dynamic_graph',
+                                                 Empty)
+
+runCommandStartDynamicGraph()
 # Connect ZMP reference and reset controllers
 print('Connect ZMP reference')
-
-runCommandClient('plug(robot.zmp_estimator.emergencyStop,robot.cm.emergencyStop_zmp)')
-runCommandClient('plug(robot.dcm_control.zmpRef,robot.com_admittance_control.zmpDes)')
-runCommandClient('robot.com_admittance_control.setState(robot.wp.comDes.value,[0.0,0.0,0.0])')
-runCommandClient('robot.com_admittance_control.Kp.value = Kp_adm')
-runCommandClient('robot.dcm_control.resetDcmIntegralError()')
-runCommandClient('robot.dcm_control.Ki.value = Ki_dcm')
+handleRunCommandClient('from dynamic_graph import plug')
+handleRunCommandClient('plug(robot.zmp_estimator.emergencyStop,robot.cm.emergencyStop_zmp)')
+handleRunCommandClient('plug(robot.dcm_control.zmpRef,robot.com_admittance_control.zmpDes)')
+handleRunCommandClient('robot.com_admittance_control.setState(robot.wp.comDes.value,[0.0,0.0,0.0])')
+handleRunCommandClient('Kp_adm = [15.0, 15.0, 0.0]')# this value is employed later
+handleRunCommandClient('robot.com_admittance_control.Kp.value = Kp_adm')
+handleRunCommandClient('robot.dcm_control.resetDcmIntegralError()')
+handleRunCommandClient('Ki_dcm = [1.0, 1.0, 1.0]')  # this value is employed later
+handleRunCommandClient('robot.dcm_control.Ki.value = Ki_dcm')
 
 print('Executing the trajectory')
 #time.sleep(1)
-runCommandClient('robot.triggerTrajGen.sin.value = 1')
-time.sleep(25)
-runCommandClient('dump_tracer(robot.tracer)')
-
-#input("Wait before check the output")
-    
+handleRunCommandClient('robot.triggerTrajGen.sin.value = 1')
+time.sleep(2500)
+#handleRunCommandClient('dump_tracer(robot.tracer)')

@@ -56,9 +56,6 @@ add_project_dependency(dynamic_graph_bridge REQUIRED)
 
 # Installing python based scripts
 catkin_install_python(PROGRAMS
-  scripts/appli.py
-  scripts/appli_dcmZmpControl_file.py
-  scripts/appli_online_walking.py
   scripts/start_talos_gazebo_kine.py
   scripts/start_sot_talos_balance.py
   scripts/start_sot_online_walking.py
@@ -72,6 +69,8 @@ foreach(dir launch tests)
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   )
 endforeach()
+
+ADD_SUBDIRECTORY(src)
 
 # Testing part
 if(CATKIN_ENABLE_TESTING)
