@@ -26,13 +26,13 @@ class TestSoTTalos(unittest.TestCase):
         f.write("x:"+str(gzGetModelPropResp.pose.position.x)+"\n")
         f.write("y:"+str(gzGetModelPropResp.pose.position.y)+"\n")
         f.write("z:"+str(gzGetModelPropResp.pose.position.z)+"\n")
-        dx=gzGetModelPropResp.pose.position.x-2.8331
-        dy=gzGetModelPropResp.pose.position.y-0.0405
-        dz=gzGetModelPropResp.pose.position.z-1.0019
+        dx=gzGetModelPropResp.pose.position.x-2.1045
+        dy=gzGetModelPropResp.pose.position.y-0.0038
+        dz=gzGetModelPropResp.pose.position.z-1.00152
         ldistance = math.sqrt(dx*dx+dy*dy+dz*dz)
         f.write("dist:"+str(ldistance))
         f.close()
-        if ldistance<0.009:
+        if ldistance<0.05:
             self.assertTrue(True,msg="Converged to the desired position")
         else:
             self.assertFalse(True,

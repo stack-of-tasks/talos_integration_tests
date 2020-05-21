@@ -45,6 +45,7 @@ runCommandStartDynamicGraph = rospy.ServiceProxy('start_dynamic_graph',
                                                  Empty)
 
 runCommandStartDynamicGraph()
+time.sleep(5)
 # Connect ZMP reference and reset controllers
 print('Connect ZMP reference')
 handleRunCommandClient('from dynamic_graph import plug')
@@ -58,7 +59,6 @@ handleRunCommandClient('Ki_dcm = [1.0, 1.0, 1.0]')  # this value is employed lat
 handleRunCommandClient('robot.dcm_control.Ki.value = Ki_dcm')
 
 print('Executing the trajectory')
-#time.sleep(1)
+time.sleep(1)
 handleRunCommandClient('robot.triggerTrajGen.sin.value = 1')
-time.sleep(2500)
-#handleRunCommandClient('dump_tracer(robot.tracer)')
+time.sleep(25)

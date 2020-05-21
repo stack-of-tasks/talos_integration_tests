@@ -98,5 +98,6 @@ handleRunCommandClient('robot.pg.velocitydes.value=(0.3,0.0,0.0)')
 time.sleep(9)
 handleRunCommandClient('robot.pg.velocitydes.value=(0.0,0.0,0.0)')
 
-time.sleep(5)
+time.sleep(9)
+handleRunCommandClient('from sot_talos_balance.create_entities_utils import dump_tracer')
 handleRunCommandClient('dump_tracer(robot.tracer)')

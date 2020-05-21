@@ -41,14 +41,20 @@ def runTest():
 
         rospy.loginfo("Stack of Tasks launched")
 
+        handleRunCommandClient('from dynamic_graph.sot.core.meta_tasks_kine import MetaTaskKine6d')
+        handleRunCommandClient('robot.taskRH  = MetaTaskKine6d(\'rh\',robot.dynamic,\'rh\',robot.OperationalPointsMap[\'right-wrist\'])')
+        handleRunCommandClient('from dynamic_graph.sot.core.sot import SOT')
+        handleRunCommandClient('robot.sot = SOT(\'sot\')')
+    
         handleRunCommandClient('from talos_integration_tests.appli import init_appli')
-        handleRunCommandClient('init_sot_talos_balance(robot)')
-
-        launchScript(initCode,'initialize SoT')
-        handleRunCommandStartDynamicGraph()
+        
+        handleRunCommandClient('init_appli(robot)')
+        
+        handleRunCommandClient('from dynamic_graph.sot.core.meta_tasks_kine import gotoNd')
+        runCommandStartDynamicGraph()
         handleRunCommandClient("target = (0.5,-0.2,1.0)")
-        handleRunCommandClient("gotoNd(taskRH,target,'111',(4.9,0.9,0.01,0.9))")
-        handleRunCommandClient("sot.push(taskRH.task.name)")
+        handleRunCommandClient("gotoNd(robot.taskRH,target,'111',(4.9,0.9,0.01,0.9))")
+        handleRunCommandClient("robot.sot.push(robot.taskRH.task.name)")
 
         time.sleep(10)
 
