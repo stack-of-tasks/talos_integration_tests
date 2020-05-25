@@ -26,7 +26,10 @@ class TestSoTTalos(unittest.TestCase):
         f.write("x:"+str(gzGetModelPropResp.pose.position.x)+"\n")
         f.write("y:"+str(gzGetModelPropResp.pose.position.y)+"\n")
         f.write("z:"+str(gzGetModelPropResp.pose.position.z)+"\n")
-        dx=gzGetModelPropResp.pose.position.x-2.1045
+        # dx depends on the timing of the simulation
+        # which can be different from one computer to another.
+        # Therefore check only dy and dz.
+        dx=0.0;
         dy=gzGetModelPropResp.pose.position.y-0.0038
         dz=gzGetModelPropResp.pose.position.z-1.00152
         ldistance = math.sqrt(dx*dx+dy*dy+dz*dz)
