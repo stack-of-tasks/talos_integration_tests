@@ -18,7 +18,7 @@ RUN echo "deb [arch=amd64] http://robotpkg.openrobots.org/wip/packages/debian/pu
 # environment helpers
 ENV ROS_PREFIX=/opt/ros/${ROS_DISTRO} ROBOTPKG_BASE=/opt/openrobots
 # required environment variables
-ENV PYTHONPATH=${ROBOTPKG_BASE}/lib/python2.7/site-packages:${ROS_PREFIX}/lib/python2.7/dist-packages \
+ENV PYTHONPATH=/ws/src/talos_integration_tests/src:${ROBOTPKG_BASE}/lib/python2.7/site-packages:${ROS_PREFIX}/lib/python2.7/dist-packages \
     CMAKE_PREFIX_PATH=${ROBOTPKG_BASE}:${ROS_PREFIX} \
     LD_LIBRARY_PATH=${ROBOTPKG_BASE}/lib/dynamic-graph-plugins \
     QT_X11_NO_MITSHM=1
