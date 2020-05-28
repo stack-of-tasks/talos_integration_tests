@@ -1,15 +1,12 @@
 #! /usr/bin/env python
 import sys
-import rospy
 import time
-from os.path import abspath, dirname, join
 
-from std_srvs.srv import *
-from dynamic_graph_bridge_msgs.srv import *
+import rospy
+from dynamic_graph_bridge_msgs.srv import RunCommand
+from std_srvs.srv import Empty
 
 runCommandClient = rospy.ServiceProxy('run_command', RunCommand)
-
-from sot_talos_balance.utils.run_test_utils import runCommandClient
 
 
 def handleRunCommandClient(code):
@@ -60,7 +57,7 @@ def runTest():
 
         time.sleep(10)
 
-    except rospy.ServiceException, e:
+    except rospy.ServiceException as e:
         rospy.logerr("Service call failed: %s" % e)
 
 

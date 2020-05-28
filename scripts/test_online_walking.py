@@ -1,15 +1,11 @@
 #! /usr/bin/env python
 import sys
-import rospy
-import rospkg
 import time
-import unittest
-import math
 
-from std_srvs.srv import *
-from dynamic_graph_bridge_msgs.srv import *
-
-from gazebo_msgs.srv import *
+import rospkg
+import rospy
+from sot_talos_balance.utils.run_test_utils import runCommandClient
+from std_srvs.srv import Empty
 
 
 def handleRunCommandClient(code):
@@ -22,12 +18,6 @@ def handleRunCommandClient(code):
 
 PKG_NAME = 'talos_integration_tests'
 '''Test online walking pattern generator'''
-
-from sys import argv
-from sot_talos_balance.utils.run_test_utils import \
-    run_ft_calibration, run_test, runCommandClient
-
-from time import sleep
 
 
 def wait_for_dynamic_graph():
@@ -51,8 +41,7 @@ rospack = rospkg.RosPack()
 lpath = rospack.get_path(PKG_NAME)
 print(lpath)
 
-appli_file_name =lpath + '/../../lib/'+PKG_NAME+\
-    '/appli_online_walking.py'
+appli_file_name = lpath + '/../../lib/' + PKG_NAME + '/appli_online_walking.py'
 
 runCommandStartDynamicGraph = rospy.ServiceProxy('start_dynamic_graph', Empty)
 rospy.loginfo("Stack of Tasks launched")
@@ -68,7 +57,7 @@ runCommandStartDynamicGraph()
 
 rospy.loginfo("Stack of Tasks launched")
 
-#run_test(appli_file_name, verbosity=1,interactive=False)
+# run_test(appli_file_name, verbosity=1,interactive=False)
 time.sleep(5)
 
 # Connect ZMP reference and reset controllers

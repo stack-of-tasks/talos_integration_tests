@@ -1,13 +1,11 @@
 #! /usr/bin/env python
 import sys
-import rospy
 import time
-import unittest
-import math
 from os.path import abspath, dirname, join
 
-from std_srvs.srv import *
-from dynamic_graph_bridge_msgs.srv import *
+import rospy
+from sot_talos_balance.utils.run_test_utils import runCommandClient
+from std_srvs.srv import Empty
 
 
 def handleRunCommandClient(code):
@@ -20,8 +18,6 @@ def handleRunCommandClient(code):
 
 PKG_NAME = 'talos_integration_tests'
 '''Test CoM admittance control as described in paper, with pre-loaded movements'''
-from sot_talos_balance.utils.run_test_utils import  \
-    run_ft_calibration, run_test, runCommandClient
 
 # get the file path for rospy_tutorials
 appli_file_name = join(dirname(abspath(__file__)), 'appli_dcmZmpControl_file.py')

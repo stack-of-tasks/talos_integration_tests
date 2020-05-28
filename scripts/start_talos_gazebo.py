@@ -2,16 +2,14 @@
 # O. Stasse 17/01/2020
 # LAAS, CNRS
 
-import os
-import rospy
+import subprocess
 import time
+
 import roslaunch
 import rospkg
-
+import rospy
 from std_srvs.srv import Empty
 
-# Start roscore
-import subprocess
 roscore = subprocess.Popen('roscore')
 time.sleep(1)
 
@@ -40,7 +38,7 @@ time.sleep(5)
 # Spawn talos model in gazebo
 launch_gazebo_spawn_hs = roslaunch.parent.ROSLaunchParent(uuid,
                                                           [talos_data_path + '/launch/talos_gazebo_spawn_hs.launch'])
-#launch_gazebo_spawn_hs = roslaunch.parent.ROSLaunchParent(uuid,
+# launch_gazebo_spawn_hs = roslaunch.parent.ROSLaunchParent(uuid,
 #                                                          [talos_data_path+'/launch/talos_gazebo_spawn_hs_wide.launch'])
 launch_gazebo_spawn_hs.start()
 rospy.loginfo("talos_gazebo_spawn_hs started")

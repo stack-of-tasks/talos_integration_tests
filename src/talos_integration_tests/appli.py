@@ -1,5 +1,5 @@
-from dynamic_graph.sot.core.meta_tasks_kine import MetaTaskKine6d, MetaTaskKineCom, gotoNd
 from dynamic_graph.sot.core.matrix_util import matrixToTuple
+from dynamic_graph.sot.core.meta_tasks_kine import (MetaTaskKine6d, MetaTaskKineCom)
 from numpy import eye
 
 
