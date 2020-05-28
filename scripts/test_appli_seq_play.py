@@ -5,8 +5,9 @@ import rospy
 from std_srvs.srv import *
 from dynamic_graph_bridge_msgs.srv import *
 
-def launchScript(code,title,description = ""):
-    raw_input(title+':   '+description)
+
+def launchScript(code, title, description=""):
+    raw_input(title + ':   ' + description)
     rospy.loginfo(title)
     rospy.loginfo(code)
     for line in code:
@@ -15,7 +16,7 @@ def launchScript(code,title,description = ""):
             answer = runCommandClient(str(line))
             rospy.logdebug(answer)
             print answer
-    rospy.loginfo("...done with "+title)
+    rospy.loginfo("...done with " + title)
 
 
 # Waiting for services
@@ -31,12 +32,11 @@ try:
     runCommandClient = rospy.ServiceProxy('run_command', RunCommand)
     runCommandStartDynamicGraph = rospy.ServiceProxy('start_dynamic_graph', Empty)
 
-    initCode = open( "appli_seq_play.py", "r").read().split("\n")
-    
+    initCode = open("appli_seq_play.py", "r").read().split("\n")
+
     rospy.loginfo("Stack of Tasks launched")
 
-
-    launchScript(initCode,'initialize SoT')
+    launchScript(initCode, 'initialize SoT')
     raw_input("Wait before starting the dynamic graph")
     runCommandStartDynamicGraph()
 

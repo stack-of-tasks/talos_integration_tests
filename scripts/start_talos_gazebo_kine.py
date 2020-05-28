@@ -14,30 +14,28 @@ from gazebo_msgs.srv import *
 
 from std_srvs.srv import Empty
 
-PKG_NAME='talos_integration_tests'
+PKG_NAME = 'talos_integration_tests'
 
 
 class TestSoTTalos(unittest.TestCase):
-
     def validation_through_gazebo(self):
-        gzGetLinkPropReq = rospy.ServiceProxy('/gazebo/get_link_state',GetLinkState)
+        gzGetLinkPropReq = rospy.ServiceProxy('/gazebo/get_link_state', GetLinkState)
         gzGetLinkPropResp = gzGetLinkPropReq(link_name='gripper_right_fingertip_1_link')
-        f=open("/tmp/output.dat","w+")
-        f.write("x:"+str(gzGetLinkPropResp.link_state.pose.position.x)+"\n")
-        f.write("y:"+str(gzGetLinkPropResp.link_state.pose.position.y)+"\n")
-        f.write("z:"+str(gzGetLinkPropResp.link_state.pose.position.z)+"\n")
-        dx=gzGetLinkPropResp.link_state.pose.position.x-0.5723
-        dy=gzGetLinkPropResp.link_state.pose.position.y+0.2885
-        dz=gzGetLinkPropResp.link_state.pose.position.z-0.7745
-        ldistance = math.sqrt(dx*dx+dy*dy+dz*dz)
-        f.write("dist:"+str(ldistance))
+        f = open("/tmp/output.dat", "w+")
+        f.write("x:" + str(gzGetLinkPropResp.link_state.pose.position.x) + "\n")
+        f.write("y:" + str(gzGetLinkPropResp.link_state.pose.position.y) + "\n")
+        f.write("z:" + str(gzGetLinkPropResp.link_state.pose.position.z) + "\n")
+        dx = gzGetLinkPropResp.link_state.pose.position.x - 0.5723
+        dy = gzGetLinkPropResp.link_state.pose.position.y + 0.2885
+        dz = gzGetLinkPropResp.link_state.pose.position.z - 0.7745
+        ldistance = math.sqrt(dx * dx + dy * dy + dz * dz)
+        f.write("dist:" + str(ldistance))
         f.close()
 
         if ldistance < 0.009:
             self.assertTrue(True)
         else:
             self.assertTrue(False)
-
 
     def runTest(self):
         # Start roscore
@@ -54,9 +52,10 @@ class TestSoTTalos(unittest.TestCase):
         uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
         roslaunch.configure_logging(uuid)
 
-        cli_args = [talos_data_path+'/launch/talos_gazebo_alone.launch',
-                    'world:=empty_forced',
-                    'enable_leg_passive:=false',
+        cli_args = [
+            talos_data_path + '/launch/talos_gazebo_alone.launch',
+            'world:=empty_forced',
+            'enable_leg_passive:=false',
         ]
         roslaunch_args = cli_args[1:]
         roslaunch_file = [(roslaunch.rlutil.resolve_launch_arguments(cli_args)[0], roslaunch_args)]
@@ -91,7 +90,7 @@ class TestSoTTalos(unittest.TestCase):
         rospy.loginfo("talos_bringup started")
 
         # Start sot
-        roscontrol_sot_talos_path=arospack.get_path('roscontrol_sot_talos')
+        roscontrol_sot_talos_path = arospack.get_path('roscontrol_sot_talos')
         launch_roscontrol_sot_talos =roslaunch.parent.ROSLaunchParent(uuid,\
                                 [roscontrol_sot_talos_path+\
                                 '/launch/sot_talos_controller_gazebo.launch'])
@@ -99,12 +98,12 @@ class TestSoTTalos(unittest.TestCase):
         rospy.loginfo("roscontrol_sot_talos started")
 
         time.sleep(5)
-        pkg_name='talos_integration_tests'
-        executable='test_kine.py'
-        node_name='test_kine_py'
-        test_kine_node = roslaunch.core.Node(pkg_name, executable,name=node_name)
+        pkg_name = 'talos_integration_tests'
+        executable = 'test_kine.py'
+        node_name = 'test_kine_py'
+        test_kine_node = roslaunch.core.Node(pkg_name, executable, name=node_name)
 
-        launch_test_kine=roslaunch.scriptapi.ROSLaunch()
+        launch_test_kine = roslaunch.scriptapi.ROSLaunch()
         launch_test_kine.start()
 
         test_kine_process = launch_test_kine.launch(test_kine_node)
@@ -120,7 +119,7 @@ class TestSoTTalos(unittest.TestCase):
                 if test_kine_process.exit_code != 0:
                     exit_status = "test_sot_talos_balance failed"
                 else:
-                    exit_status=None
+                    exit_status = None
 
                 print("Stopping SoT")
                 launch_roscontrol_sot_talos.shutdown()
@@ -138,4 +137,4 @@ class TestSoTTalos(unittest.TestCase):
 
 if __name__ == '__main__':
     import rosunit
-    rosunit.unitrun(PKG_NAME,'test_sot_talos_kine',TestSoTTalos)
+    rosunit.unitrun(PKG_NAME, 'test_sot_talos_kine', TestSoTTalos)

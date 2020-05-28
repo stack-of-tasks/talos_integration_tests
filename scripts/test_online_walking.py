@@ -11,6 +11,7 @@ from dynamic_graph_bridge_msgs.srv import *
 
 from gazebo_msgs.srv import *
 
+
 def handleRunCommandClient(code):
     out = runCommandClient(code)
 
@@ -19,8 +20,7 @@ def handleRunCommandClient(code):
         sys.exit(-1)
 
 
-PKG_NAME='talos_integration_tests'
-
+PKG_NAME = 'talos_integration_tests'
 '''Test online walking pattern generator'''
 
 from sys import argv
@@ -28,6 +28,7 @@ from sot_talos_balance.utils.run_test_utils import \
     run_ft_calibration, run_test, runCommandClient
 
 from time import sleep
+
 
 def wait_for_dynamic_graph():
     try:
@@ -53,8 +54,7 @@ print(lpath)
 appli_file_name =lpath + '/../../lib/'+PKG_NAME+\
     '/appli_online_walking.py'
 
-
-runCommandStartDynamicGraph = rospy.ServiceProxy('start_dynamic_graph',Empty)
+runCommandStartDynamicGraph = rospy.ServiceProxy('start_dynamic_graph', Empty)
 rospy.loginfo("Stack of Tasks launched")
 
 wait_for_dynamic_graph()
@@ -68,21 +68,16 @@ runCommandStartDynamicGraph()
 
 rospy.loginfo("Stack of Tasks launched")
 
-
 #run_test(appli_file_name, verbosity=1,interactive=False)
 time.sleep(5)
 
 # Connect ZMP reference and reset controllers
 print('Connect ZMP reference')
 handleRunCommandClient('from dynamic_graph import plug')
-handleRunCommandClient(
-    'plug(robot.zmp_estimator.emergencyStop,robot.cm.emergencyStop_zmp)')
-handleRunCommandClient(
-    'plug(robot.dcm_control.zmpRef,robot.com_admittance_control.zmpDes)')
-handleRunCommandClient(
-    'robot.com_admittance_control.setState(robot.wp.comDes.value,[0.0,0.0,0.0])'
-)
-handleRunCommandClient('Kp_adm = [15.0, 15.0, 0.0]')# this value is employed later
+handleRunCommandClient('plug(robot.zmp_estimator.emergencyStop,robot.cm.emergencyStop_zmp)')
+handleRunCommandClient('plug(robot.dcm_control.zmpRef,robot.com_admittance_control.zmpDes)')
+handleRunCommandClient('robot.com_admittance_control.setState(robot.wp.comDes.value,[0.0,0.0,0.0])')
+handleRunCommandClient('Kp_adm = [15.0, 15.0, 0.0]')  # this value is employed later
 handleRunCommandClient('robot.com_admittance_control.Kp.value = Kp_adm')
 handleRunCommandClient('robot.dcm_control.resetDcmIntegralError()')
 handleRunCommandClient('Ki_dcm = [1.0, 1.0, 1.0]')  # this value is employed later
