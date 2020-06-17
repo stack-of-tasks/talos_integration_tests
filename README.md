@@ -13,9 +13,11 @@ of the robot. However, for now the flexibility in the hip found in real TALOS hu
 # Setup
 ```
 mkdir -p test_ws/src
-cd tests_ws/src
+cd test_ws/src
 catkin_init_workspace
 git clone --recursive https://github.com/stack-of-tasks/talos_integration_tests.git
+cd ..
+catkin config --install
 catkin build talos_integration_tests
 ```
 
