@@ -25,5 +25,6 @@
   <run_depend>talos_gazebo</run_depend>
   <run_depend>roscontrol_sot_talos</run_depend>
   <run_depend>dynamic_graph_bridge_msgs</run_depend>
+  <run_depend>sot-pattern-generator</run_depend>
 
 </package>
