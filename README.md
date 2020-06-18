@@ -76,7 +76,7 @@ docker run --rm --net=host --runtime=nvidia -e DISPLAY -it talos-integration-tes
 
 Once in the container:
 ```
-source devel/setup.bash
+source install/setup.bash
 rostest talos_integration_tests test_kine.test
 rostest talos_integration_tests test_sot_talos_balance.test
 ```
