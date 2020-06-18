@@ -40,4 +40,5 @@ RUN rosdep init \
 
 # talos-integration-tests build
 ADD . /ws/src/talos_integration_tests
-RUN catkin build talos_integration_tests
+RUN catkin config --install \
+ && catkin build talos_integration_tests
