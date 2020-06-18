@@ -44,3 +44,6 @@ RUN rosdep init \
 ADD . /ws/src/talos_integration_tests
 RUN catkin config --install \
  && catkin build talos_integration_tests
+
+ENTRYPOINT ["/ws/src/talos_integration_tests/entrypoint.sh"]
+CMD ["/bin/bash"]
