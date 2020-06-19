@@ -5,17 +5,12 @@ ARG UBUNTU=bionic
 ARG ROS_DISTRO=melodic
 
 # ROS & robotpkg packages repository
-ENV ROS_KEY=C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 ROBOTPKG_KEY=F6F93D4D425860C0B0FBE848ADD535E05E56C3FD
-ADD http://repo.ros2.org/repos.key http://robotpkg.openrobots.org/packages/debian/robotpkg.key /
+ADD repos.key /
 RUN apt-get update -qqy && apt-get install -qqy gnupg2 && rm -rf /var/lib/apt/lists \
  && echo "deb http://packages.ros.org/ros/ubuntu ${UBUNTU} main" > /etc/apt/sources.list.d/ros-latest.list \
  && echo "deb [arch=amd64] http://robotpkg.openrobots.org/wip/packages/debian/pub ${UBUNTU} robotpkg" > /etc/apt/sources.list.d/robotpkg.list \
  && echo "deb [arch=amd64] http://robotpkg.openrobots.org/packages/debian/pub ${UBUNTU} robotpkg" >> /etc/apt/sources.list.d/robotpkg.list \
- && export GNUPGHOME=$(mktemp -d) \
- && gpg2 --import-options import-show /repos.key | grep -q $ROS_KEY \
- && gpg2 --import-options import-show /robotpkg.key | grep -q $ROBOTPKG_KEY \
- && rm -rf $GNUPGHOME \
- && apt-key add /repos.key /robotpkg.key
+ && apt-key add /repos.key
 
 # environment helpers
 ENV ROS_PREFIX=/opt/ros/${ROS_DISTRO} ROBOTPKG_BASE=/opt/openrobots
