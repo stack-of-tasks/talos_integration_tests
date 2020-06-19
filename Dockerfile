@@ -5,7 +5,7 @@ ARG UBUNTU=bionic
 ARG ROS_DISTRO=melodic
 
 # ROS & robotpkg packages repository
-ADD repos.key /
+ADD .docker/repos.key /
 RUN apt-get update -qqy && apt-get install -qqy gnupg2 && rm -rf /var/lib/apt/lists \
  && echo "deb http://packages.ros.org/ros/ubuntu ${UBUNTU} main" > /etc/apt/sources.list.d/ros-latest.list \
  && echo "deb [arch=amd64] http://robotpkg.openrobots.org/wip/packages/debian/pub ${UBUNTU} robotpkg" > /etc/apt/sources.list.d/robotpkg.list \
@@ -40,5 +40,5 @@ ADD . /ws/src/talos_integration_tests
 RUN catkin config --install \
  && catkin build talos_integration_tests
 
-ENTRYPOINT ["/ws/src/talos_integration_tests/entrypoint.sh"]
+ENTRYPOINT ["/ws/src/talos_integration_tests/.docker/entrypoint.sh"]
 CMD ["/bin/bash"]
