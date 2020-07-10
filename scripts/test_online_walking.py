@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 import sys
 import rospy
 import rospkg
@@ -68,9 +68,11 @@ runCommandStartDynamicGraph()
 
 rospy.loginfo("Stack of Tasks launched")
 
+#initializing node to read ros time
+rospy.init_node('test_online_walking', anonymous=True)
 
 #run_test(appli_file_name, verbosity=1,interactive=False)
-time.sleep(5)
+rospy.sleep(3)
 
 # Connect ZMP reference and reset controllers
 print('Connect ZMP reference')
@@ -91,13 +93,18 @@ handleRunCommandClient('robot.dcm_control.Ki.value = Ki_dcm')
 print('Executing the trajectory')
 handleRunCommandClient('robot.triggerPG.sin.value = 1')
 
-time.sleep(4)
-handleRunCommandClient('robot.pg.velocitydes.value=(0.2,0.0,0.0)')
-time.sleep(7)
-handleRunCommandClient('robot.pg.velocitydes.value=(0.3,0.0,0.0)')
-time.sleep(9)
-handleRunCommandClient('robot.pg.velocitydes.value=(0.0,0.0,0.0)')
 
-time.sleep(9)
+
+rospy.sleep(1)
+
+
+handleRunCommandClient('robot.pg.velocitydes.value=(0.5,0.0,0.0)')
+rospy.sleep(5)
+handleRunCommandClient('robot.pg.velocitydes.value=(0.7,0.0,0.0)')
+rospy.sleep(4)
+handleRunCommandClient('robot.pg.velocitydes.value=(0.9,0.0,0.0)')
+rospy.sleep(10)
+handleRunCommandClient('robot.pg.velocitydes.value=(0.0,0.0,0.0)')
+rospy.sleep(3)
 handleRunCommandClient('from sot_talos_balance.create_entities_utils import dump_tracer')
 handleRunCommandClient('dump_tracer(robot.tracer)')

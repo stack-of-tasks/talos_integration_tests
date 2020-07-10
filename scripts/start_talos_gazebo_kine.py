@@ -133,7 +133,10 @@ class TestSoTTalos(unittest.TestCase):
                 print("Stop roscore")
                 roscore.terminate()
 
-            r.sleep()
+            try:
+                r.sleep()
+            except rospy.ROSInterruptException:
+                rospy.logwarn("Exiting test")
 
 
 if __name__ == '__main__':

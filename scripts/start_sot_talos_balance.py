@@ -32,7 +32,7 @@ class TestSoTTalos(unittest.TestCase):
         ldistance = math.sqrt(dx*dx+dy*dy+dz*dz)
         f.write("dist:"+str(ldistance))
         f.close()
-        if ldistance<0.009:
+        if ldistance<0.04:
             self.assertTrue(True,msg="Converged to the desired position")
         else:
             self.assertFalse(True,
@@ -138,7 +138,10 @@ class TestSoTTalos(unittest.TestCase):
                 print("Stop roscore")
                 roscore.terminate()
 
-            r.sleep()
+            try:
+                r.sleep()
+            except rospy.ROSInterruptException:
+                rospy.logwarn("Exiting test")
 
 if __name__ == '__main__':
     import rosunit

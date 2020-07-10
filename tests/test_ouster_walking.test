@@ -1,0 +1,7 @@
+<launch>
+  
+  <!-- Launching the python test -->
+  <test test-name="test_sot_ouster_walking" pkg="talos_integration_tests" type="start_sot_ouster_walking.py" time-limit="600.0" />
+  
+</launch>
+

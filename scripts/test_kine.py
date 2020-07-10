@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 import sys
 import rospy
 import time
@@ -20,6 +20,8 @@ def handleRunCommandClient(code):
         sys.exit(-1)
 
 PKG_NAME='talos_integration_tests'
+
+rospy.init_node('test_kine', anonymous=True)
 
 def runTest():
     # Waiting for services
@@ -56,7 +58,7 @@ def runTest():
         handleRunCommandClient("gotoNd(robot.taskRH,target,'111',(4.9,0.9,0.01,0.9))")
         handleRunCommandClient("robot.sot.push(robot.taskRH.task.name)")
 
-        time.sleep(10)
+        rospy.sleep(10)
 
     except rospy.ServiceException, e:
         rospy.logerr("Service call failed: %s" % e)

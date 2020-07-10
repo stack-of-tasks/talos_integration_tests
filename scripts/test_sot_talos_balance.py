@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 import sys
 import rospy
 import time
@@ -19,6 +19,8 @@ def handleRunCommandClient(code):
 
 PKG_NAME='talos_integration_tests'
 
+rospy.init_node('test_balance_walking', anonymous=True)
+
 '''Test CoM admittance control as described in paper, with pre-loaded movements'''
 from sot_talos_balance.utils.run_test_utils import  \
     run_ft_calibration, run_test, runCommandClient
@@ -26,7 +28,7 @@ from sot_talos_balance.utils.run_test_utils import  \
 # get the file path for rospy_tutorials
 appli_file_name = join(dirname(abspath(__file__)), 'appli_dcmZmpControl_file.py')
 
-time.sleep(2)
+rospy.sleep(2)
 rospy.loginfo("Stack of Tasks launched")
 
 test_folder = 'TestKajita2003StraightWalking64/20cm'
@@ -40,12 +42,12 @@ handleRunCommandClient('test_folder = "' + test_folder + '"')
 
 handleRunCommandClient('from talos_integration_tests.appli_dcmZmpControl_file import init_sot_talos_balance')
 handleRunCommandClient('init_sot_talos_balance(robot,\''+test_folder+'\')')
-time.sleep(5)
+rospy.sleep(3)
 runCommandStartDynamicGraph = rospy.ServiceProxy('start_dynamic_graph',
                                                  Empty)
 
 runCommandStartDynamicGraph()
-time.sleep(5)
+rospy.sleep(3)
 # Connect ZMP reference and reset controllers
 print('Connect ZMP reference')
 handleRunCommandClient('from dynamic_graph import plug')
@@ -59,6 +61,6 @@ handleRunCommandClient('Ki_dcm = [1.0, 1.0, 1.0]')  # this value is employed lat
 handleRunCommandClient('robot.dcm_control.Ki.value = Ki_dcm')
 
 print('Executing the trajectory')
-time.sleep(1)
+rospy.sleep(1)
 handleRunCommandClient('robot.triggerTrajGen.sin.value = 1')
-time.sleep(25)
+rospy.sleep(20)
