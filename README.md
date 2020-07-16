@@ -24,6 +24,14 @@ Preparing your environment variables:
 source ./test_ws/install/setup.bash
 source $HOME/bin/setup-opt-robotpkg.sh
 ```
+If your installation uses the binaries, you will need to install the following packages, on top of the required `robotpkg-sot-core-v3` and `robotpkg-py27-talos-dev`:
+```
+sudo apt install robotpkg-talos-simulation robotpkg-talos-metapkg-ros-control-sot robotpkg-py27-sot-talos-balance robotpkg-py27-sot-pattern-generator-v3 robotpkg-ros-ouster-gazebo-simulation
+```
+
+The test using mapping and lidar still depend on the following packages, not yet integrated to robotpkg:
+* [aicp_mapping](https://github.com/Gepetto/aicp_mapping), the mapping algorithm
+* [talos-bauzil](https://gitlab.laas.fr/tlasguigne/talos-bauzil), the simulation of the room used for tests (to be ported on github)
 
 # First integration tests
 
@@ -45,7 +53,7 @@ To launch:
 ```
 rostest talos_integration_tests test_sot_talos_balance.test
 ```
-The robot is supposed to walk forward 2.8 m and reached position [2.8331,0.0405,1.0019]
+The robot is supposed to walk forward 2.8 m and reach position [2.8331,0.0405,1.0019]
 
 There is a you tube video showing what to expect:
 
@@ -57,7 +65,14 @@ To launch:
 ```
 rostest talos_integration_tests test_online_walking.test
 ```
-The robot is supposed to walk forward 2.8 m and reached position [2.12,0.012,1.00]
+The robot is supposed to walk forward 2.8 m and reach position [2.12,0.012,1.00]
+
+## Real time on-line walking while mapping using a lidar
+
+To launch:
+```
+rostest talos_integration_tests test_ouster_walking.test
+```
 
 
 # Docker
