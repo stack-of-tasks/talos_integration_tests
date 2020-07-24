@@ -357,6 +357,10 @@ def init_online_walking(robot):
     create_topic(robot.publisher, robot.pg, 'rightfootref', robot=robot,data_type='matrixHomo')
     create_topic( robot.publisher, robot.wp, 'footRight', robot=robot,data_type='matrixHomo')
 
+    #Odometry
+    create_topic(robot.publisher, robot.e2q, 'quaternion', robot=robot,data_type='vector')
+    create_topic(robot.publisher, robot.base_estimator, 'v', robot=robot,data_type='vector')
+
     ## --- TRACER
     robot.tracer = TracerRealTime("com_tracer")
     robot.tracer.setBufferSize(80 * (2**20))
