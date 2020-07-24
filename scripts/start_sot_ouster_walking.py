@@ -62,6 +62,7 @@ class TestSoTTalos(unittest.TestCase):
         roslaunch.configure_logging(uuid)
 
         cli_args = [talos_bauzil_path+'/launch/script_walking_bauzil.launch',
+            #'world_name:=empty',
             'world_name:=bauzil_skins',
             #'robot:=full_v2',
             'robot:=full_v2_ouster',
@@ -129,7 +130,7 @@ class TestSoTTalos(unittest.TestCase):
 
         # Publish odometry
         launch_odom = roslaunch.parent.ROSLaunchParent(uuid,
-                                                    [talos_bauzil_path+'/launch/talos_odometry.launch'])
+                                                    [talos_bauzil_path+'/launch/talos_sot_odometry.launch'])
         launch_odom.start()
         rospy.loginfo("Talos odometry started")
 
@@ -138,7 +139,7 @@ class TestSoTTalos(unittest.TestCase):
         # Start mapping
         aicp_path = arospack.get_path('aicp_ros')
         cli_args = [aicp_path+'/launch/aicp_mapping.launch',
-            'pose_odom:=/odom_aicp',
+            'pose_odom:=/odom_sot_aicp',
             'lidar_channel:=/os1_cloud_node/points',
             'inertial_frame:=/world',
             'fixed_frame:=/world'
