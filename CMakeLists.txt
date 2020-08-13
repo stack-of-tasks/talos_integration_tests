@@ -60,6 +60,7 @@ catkin_install_python(PROGRAMS
   scripts/start_sot_talos_balance.py
   scripts/start_sot_online_walking.py
   scripts/start_sot_ouster_walking.py
+  scripts/start_torque_control.py
   scripts/test_kine.py
   scripts/test_sot_talos_balance.py
   scripts/test_online_walking.py
@@ -79,5 +80,11 @@ if(CATKIN_ENABLE_TESTING)
   add_rostest(tests/test_kine.test)
   add_rostest(tests/test_sot_talos_balance.test)
   add_rostest(tests/test_online_walking.test)
-  add_rostest(tests/test_ouster_walking.test)  
+  add_rostest(tests/test_ouster_walking.test)
+  add_rostest(tests/test_torque_control_on_spot.test)  #add_rostest(tests/test_torque_control.test ARGS arg1:=true arg2:=false)
+  add_rostest(tests/test_torque_control_walk_20.test)
+  add_rostest(tests/test_torque_control_on_spot_pg.test)
+  add_rostest(tests/test_torque_control_walk_20_pg.test)
+
+
 endif()

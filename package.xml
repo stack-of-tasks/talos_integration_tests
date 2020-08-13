@@ -27,4 +27,5 @@
   <run_depend>dynamic_graph_bridge_msgs</run_depend>
   <run_depend>sot-pattern-generator</run_depend>
   <run_depend>talos_bauzil</run_depend>
+  <run_depend>talos-torque-control</run_depend>
 </package>
