@@ -36,7 +36,7 @@ class TestSoTTalos(unittest.TestCase):
         ldistance = math.sqrt(dx*dx+dy*dy+dz*dz)
         f.write("dist:"+str(ldistance))
         f.close()
-        if ldistance<0.05:
+        if ldistance<0.07:
             self.assertTrue(True,msg="Converged to the desired position")
         else:
             self.assertFalse(True,
@@ -59,8 +59,7 @@ class TestSoTTalos(unittest.TestCase):
 
         cli_args = [talos_data_path+'/launch/talos_gazebo_alone.launch',
             'world:=empty_forced',
-            'enable_leg_passive:=false',
-            'debug:=true'
+            'enable_leg_passive:=false'
            ]
         roslaunch_args = cli_args[1:]
         roslaunch_file = [(roslaunch.rlutil.resolve_launch_arguments\
@@ -108,13 +107,28 @@ class TestSoTTalos(unittest.TestCase):
 
         time.sleep(5)
         pkg_name='talos-torque-control'
-        executable='sim_walk_torque.py'
-        node_name='sim_walk_torque_py'
 
-        if len(argv)==3 and argv[2]=='pattern_generator':
+        if len(argv)==7 and argv[1]=='vel' and argv[3]=='pattern_generator':
+            #starting sim_walk_vel with type of walk and pg
+            mode=str(argv[2]+' '+argv[3])
+            executable='sim_walk_vel.py'
+            node_name='sim_walk_vel_py'
+        elif len(argv)==6 and argv[1]=='vel':
+            #starting sim_walk_vel without pg
+            mode=str(argv[2])
+            executable='sim_walk_vel.py'
+            node_name='sim_walk_vel_py'
+        elif len(argv)==6 and argv[2]=='pattern_generator':
+            #pg argument but length of 6 means no vel argument --> sim_walk_torque
             mode=str(argv[1]+' '+argv[2])
-        else:
+            executable='sim_walk_torque.py'
+            node_name='sim_walk_torque_py'
+        elif len(argv)==5:
+            #walk type only will mean walk_torque
             mode=str(argv[1])
+            executable='sim_walk_torque.py'
+            node_name='sim_walk_torque_py'
+        else: raise ValueError(str(len(argv))+' '+str(argv[0])+' '+str(argv[1])+' '+str(argv[2])+' '+str(argv[3])+' '+str(argv[4])+' '+str(argv[5]))
         
         sim_walk_torque_node = roslaunch.core.\
             Node(pkg_name, executable,name=node_name,args=mode)

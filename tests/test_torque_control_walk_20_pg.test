@@ -1,6 +1,6 @@
 <launch>
 
   <!-- Launching the python test -->
-  <test test-name="test_torque_control" pkg="talos_integration_tests" type="start_torque_control.py" time-limit="200.0" args="walk_20 pattern_generator" />
+  <test test-name="test_torque_control" pkg="talos_integration_tests" type="start_torque_control.py" time-limit="300.0" args="walk_20 pattern_generator" />
   
 </launch>
