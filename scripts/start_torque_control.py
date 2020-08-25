@@ -111,22 +111,22 @@ class TestSoTTalos(unittest.TestCase):
         if len(argv)==7 and argv[1]=='vel' and argv[3]=='pattern_generator':
             #starting sim_walk_vel with type of walk and pg
             mode=str(argv[2]+' '+argv[3])
-            executable='sim_walk_vel.py'
+            executable='integ_sim_walk_vel.py'
             node_name='sim_walk_vel_py'
         elif len(argv)==6 and argv[1]=='vel':
             #starting sim_walk_vel without pg
             mode=str(argv[2])
-            executable='sim_walk_vel.py'
+            executable='integ_sim_walk_vel.py'
             node_name='sim_walk_vel_py'
         elif len(argv)==6 and argv[2]=='pattern_generator':
             #pg argument but length of 6 means no vel argument --> sim_walk_torque
             mode=str(argv[1]+' '+argv[2])
-            executable='sim_walk_torque.py'
+            executable='integ_sim_walk_torque.py'
             node_name='sim_walk_torque_py'
         elif len(argv)==5:
             #walk type only will mean walk_torque
             mode=str(argv[1])
-            executable='sim_walk_torque.py'
+            executable='integ_sim_walk_torque.py'
             node_name='sim_walk_torque_py'
         else: raise ValueError(str(len(argv))+' '+str(argv[0])+' '+str(argv[1])+' '+str(argv[2])+' '+str(argv[3])+' '+str(argv[4])+' '+str(argv[5]))
         
