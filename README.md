@@ -18,13 +18,13 @@ catkin_init_workspace
 git clone --recursive https://github.com/stack-of-tasks/talos_integration_tests.git
 cd ..
 catkin config --install
-catkin build talos_integration_tests
+catkin build talos_integration_tests --cmake-args -DPYTHON_STANDARD_LAYOUT:BOOL=ON -DPYTHON_DEB_LAYOUT:BOOL=OFF -DSETUPTOOLS_DEB_LAYOUT:BOOL=OFF
 ```
 
 Preparing your environment variables:
 ```
 source ./test_ws/install/setup.bash
-source $HOME/bin/setup-opt-robotpkg.sh
+source setup-sot.sh -p /opt/openrobots -r
 ```
 
 # First integration tests
@@ -35,11 +35,16 @@ To launch:
 ```
 rostest talos_integration_tests test_kine.test
 ```
+or 
+```
+rosrun talos_integration_tests start_talos_gazebo_kine.py 
+```
 The robot is supposed to move forward its right hand up to position [0.5723,-0.2885,0.7745]
 
 There is a you tube video showing what to expect:
 
 [![Alt text](http://i3.ytimg.com/vi/gptPEm5Qj3o/hqdefault.jpg)](https://youtu.be/gptPEm5Qj3o)
+
 
 ## Balancing on gazebo
 
@@ -47,6 +52,11 @@ To launch:
 ```
 rostest talos_integration_tests test_sot_talos_balance.test
 ```
+or 
+```
+rosrun talos_integration_tests start_sot_talos_balance.py
+```
+
 The robot is supposed to walk forward 2.8 m and reached position [2.8331,0.0405,1.0019]
 
 There is a you tube video showing what to expect:
@@ -59,6 +69,11 @@ To launch:
 ```
 rostest talos_integration_tests test_online_walking.test
 ```
+or 
+```
+rosrun talos_integration_tests start_sot_online_walking.py
+```
+
 The robot is supposed to walk forward 2.8 m and reached position [2.12,0.012,1.00]
 
 
