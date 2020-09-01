@@ -23,7 +23,7 @@ catkin build talos_integration_tests --cmake-args -DPYTHON_STANDARD_LAYOUT:BOOL=
 
 Preparing your environment variables:
 ```
-source ./test_ws/install/setup.bash
+source setup-sot.sh -p $PWD/test_ws/install -r
 source setup-sot.sh -p /opt/openrobots -r
 ```
 
