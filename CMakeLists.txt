@@ -35,7 +35,6 @@ SET(CATKIN_REQUIRED_COMPONENTS
   rospy
   talos_gazebo
   roscontrol_sot_talos
-  dynamic_graph_bridge_msgs
   )
 
 find_package(catkin REQUIRED COMPONENTS
@@ -77,5 +76,5 @@ if(CATKIN_ENABLE_TESTING)
   find_package(rostest REQUIRED)
   add_rostest(tests/test_kine.test)
   add_rostest(tests/test_sot_talos_balance.test)
-  add_rostest(tests/test_online_walking.test)  
+  add_rostest(tests/test_online_walking.test)
 endif()
