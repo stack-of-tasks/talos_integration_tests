@@ -4,7 +4,7 @@ import time
 
 import rospkg
 import rospy
-from sot_talos_balance.utils.run_test_utils import runCommandClient
+from dynamic_graph.sot_talos_balance.utils.run_test_utils import runCommandClient
 from std_srvs.srv import Empty
 
 

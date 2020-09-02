@@ -12,11 +12,11 @@ from dynamic_graph.sot.dynamic_pinocchio import DynamicPinocchio
 from dynamic_graph.tracer_real_time import TracerRealTime
 from rospkg import RosPack
 
-import sot_talos_balance.talos.base_estimator_conf as base_estimator_conf
-import sot_talos_balance.talos.control_manager_conf as cm_conf
-import sot_talos_balance.talos.ft_calibration_conf as ft_conf
-import sot_talos_balance.talos.parameter_server_conf as param_server_conf
-from sot_talos_balance.create_entities_utils import *
+import dynamic_graph.sot_talos_balance.talos.base_estimator_conf as base_estimator_conf
+import dynamic_graph.sot_talos_balance.talos.control_manager_conf as cm_conf
+import dynamic_graph.sot_talos_balance.talos.ft_calibration_conf as ft_conf
+import dynamic_graph.sot_talos_balance.talos.parameter_server_conf as param_server_conf
+from dynamic_graph.sot_talos_balance.create_entities_utils import *
 
 from dynamic_graph import plug
 
