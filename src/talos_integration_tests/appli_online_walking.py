@@ -1,27 +1,22 @@
 # flake8: noqa
 from math import sqrt
 
-from dynamic_graph.sot.core.task import Task
-from dynamic_graph.sot.core.feature_posture import FeaturePosture
-from dynamic_graph import plug
-from dynamic_graph.sot.core.sot import SOT
-from dynamic_graph.sot.core.derivator import Derivator_of_Vector
-from dynamic_graph.sot.core.matrix_util import matrixToTuple
-from dynamic_graph.sot.core.meta_tasks_kine import MetaTaskKine6d
-from dynamic_graph.sot.core.meta_tasks_kine import MetaTaskKineCom, gotoNd
-from dynamic_graph.sot.dynamic_pinocchio import DynamicPinocchio
-from dynamic_graph.tracer_real_time import TracerRealTime
-from rospkg import RosPack
-
 import dynamic_graph.sot_talos_balance.talos.base_estimator_conf as base_estimator_conf
 import dynamic_graph.sot_talos_balance.talos.control_manager_conf as cm_conf
 import dynamic_graph.sot_talos_balance.talos.ft_calibration_conf as ft_conf
 import dynamic_graph.sot_talos_balance.talos.parameter_server_conf as param_server_conf
-from dynamic_graph.sot_talos_balance.create_entities_utils import *
-
-from dynamic_graph.sot.pattern_generator import PatternGenerator
-
 from dynamic_graph import plug
+from dynamic_graph.sot.core.derivator import Derivator_of_Vector
+from dynamic_graph.sot.core.feature_posture import FeaturePosture
+from dynamic_graph.sot.core.matrix_util import matrixToTuple
+from dynamic_graph.sot.core.meta_tasks_kine import MetaTaskKine6d, MetaTaskKineCom, gotoNd
+from dynamic_graph.sot.core.sot import SOT
+from dynamic_graph.sot.core.task import Task
+from dynamic_graph.sot.dynamic_pinocchio import DynamicPinocchio
+from dynamic_graph.sot.pattern_generator import PatternGenerator
+from dynamic_graph.sot_talos_balance.create_entities_utils import *
+from dynamic_graph.tracer_real_time import TracerRealTime
+from rospkg import RosPack
 
 
 def init_online_walking(robot):
@@ -46,6 +41,7 @@ def init_online_walking(robot):
     robot.dynamic.createOpPoint('LF', robot.OperationalPointsMap['left-ankle'])
     robot.dynamic.createOpPoint('RF', robot.OperationalPointsMap['right-ankle'])
     robot.dynamic.createOpPoint('WT', robot.OperationalPointsMap['waist'])
+    robot.dynamic.add_signals()
     robot.dynamic.LF.recompute(0)
     robot.dynamic.RF.recompute(0)
     robot.dynamic.WT.recompute(0)
@@ -88,8 +84,8 @@ def init_online_walking(robot):
     plug(robot.dynamic.LF, robot.pg.leftfootcurrentpos)
     plug(robot.dynamic.RF, robot.pg.rightfootcurrentpos)
     robotDim = len(robot.dynamic.velocity.value)
-    robot.pg.motorcontrol.value = robotDim * (0, )
-    robot.pg.zmppreviouscontroller.value = (0, 0, 0)
+    robot.pg.motorcontrol.value = np.array(robotDim * (0, ))
+    robot.pg.zmppreviouscontroller.value = np.array((0, 0, 0))
 
     robot.pg.initState()
 
@@ -103,7 +99,7 @@ def init_online_walking(robot):
     robot.pg.parseCmd(':feedBackControl false')
     robot.pg.parseCmd(':useDynamicFilter true')
 
-    robot.pg.velocitydes.value = (0.1, 0.0, 0.0)  # DEFAULT VALUE (0.1,0.0,0.0)
+    robot.pg.velocitydes.value = np.array((0.1, 0.0, 0.0))  # DEFAULT VALUE (0.1,0.0,0.0)
 
     # -------------------------- TRIGGER --------------------------
 
@@ -158,9 +154,10 @@ def init_online_walking(robot):
     robot.rdynamic = DynamicPinocchio("real_dynamics")
     robot.rdynamic.setModel(robot.dynamic.model)
     robot.rdynamic.setData(robot.rdynamic.model.createData())
+    robot.rdynamic.add_signals()
     plug(robot.base_estimator.q, robot.rdynamic.position)
-    robot.rdynamic.velocity.value = [0.0] * robotDim
-    robot.rdynamic.acceleration.value = [0.0] * robotDim
+    robot.rdynamic.velocity.value = np.array([0.0] * robotDim)
+    robot.rdynamic.acceleration.value = np.array([0.0] * robotDim)
 
     # --- CoM Estimation
     cdc_estimator = DcmEstimator('cdc_estimator')
@@ -185,6 +182,7 @@ def init_online_walking(robot):
     zmp_estimator = SimpleZmpEstimator("zmpEst")
     robot.rdynamic.createOpPoint('sole_LF', 'left_sole_link')
     robot.rdynamic.createOpPoint('sole_RF', 'right_sole_link')
+    robot.rdynamic.add_signals()
     plug(robot.rdynamic.sole_LF, zmp_estimator.poseLeft)
     plug(robot.rdynamic.sole_RF, zmp_estimator.poseRight)
     plug(robot.ftc.left_foot_force_out, zmp_estimator.wrenchLeft)
@@ -195,8 +193,8 @@ def init_online_walking(robot):
     # -------------------------- ADMITTANCE CONTROL --------------------------
 
     # --- DCM controller
-    Kp_dcm = [8.0] * 3
-    Ki_dcm = [0.0, 0.0, 0.0]  # zero (to be set later)
+    Kp_dcm = np.array([8.0] * 3)
+    Ki_dcm = np.array([0.0, 0.0, 0.0])  # zero (to be set later)
     gamma_dcm = 0.2
 
     dcm_controller = DcmController("dcmCtrl")
@@ -217,10 +215,10 @@ def init_online_walking(robot):
 
     robot.dcm_control = dcm_controller
 
-    Ki_dcm = [1.0, 1.0, 1.0]  # this value is employed later
+    Ki_dcm = np.array([1.0, 1.0, 1.0])  # this value is employed later
 
     # --- CoM admittance controller
-    Kp_adm = [0.0, 0.0, 0.0]  # zero (to be set later)
+    Kp_adm = np.array([0.0, 0.0, 0.0])  # zero (to be set later)
 
     com_admittance_control = ComAdmittanceController("comAdmCtrl")
     com_admittance_control.Kp.value = Kp_adm
@@ -230,11 +228,11 @@ def init_online_walking(robot):
     plug(robot.wp.acomDes, com_admittance_control.ddcomDes)
 
     com_admittance_control.init(dt)
-    com_admittance_control.setState(robot.wp.comDes.value, [0.0, 0.0, 0.0])
+    com_admittance_control.setState(robot.wp.comDes.value, np.array([0.0, 0.0, 0.0]))
 
     robot.com_admittance_control = com_admittance_control
 
-    Kp_adm = [15.0, 15.0, 0.0]  # this value is employed later
+    Kp_adm = np.array([15.0, 15.0, 0.0])  # this value is employed later
 
     # --- Control Manager
     robot.cm = create_ctrl_manager(cm_conf, dt, robot_name='robot')
@@ -248,7 +246,7 @@ def init_online_walking(robot):
     robot.taskUpperBody = Task('task_upper_body')
     robot.taskUpperBody.feature = FeaturePosture('feature_upper_body')
 
-    q = list(robot.dynamic.position.value)
+    q = robot.dynamic.position.value
     robot.taskUpperBody.feature.state.value = q
     robot.taskUpperBody.feature.posture.value = q
 
@@ -318,6 +316,7 @@ def init_online_walking(robot):
     robot.sot.setSize(robot.dynamic.getDimension())
 
     # --- Plug SOT control to device through control manager
+    robot.cm.add_signals()
     plug(robot.sot.control, robot.cm.ctrl_sot_input)
     plug(robot.cm.u_safe, robot.device.control)
 

@@ -1,24 +1,21 @@
 # flake8: noqa
 from math import sqrt
 
-from dynamic_graph.sot.core.task import Task
-from dynamic_graph.sot.core.feature_posture import FeaturePosture
-from dynamic_graph.sot.core.sot import SOT
-from dynamic_graph.sot.core.derivator import Derivator_of_Vector
-
-from dynamic_graph.sot.core.matrix_util import matrixToTuple
-from dynamic_graph.sot.core.meta_tasks_kine import MetaTaskKine6d, MetaTaskKineCom, gotoNd
-from dynamic_graph.sot.dynamic_pinocchio import DynamicPinocchio
-from dynamic_graph.tracer_real_time import TracerRealTime
-from rospkg import RosPack
-
 import dynamic_graph.sot_talos_balance.talos.base_estimator_conf as base_estimator_conf
 import dynamic_graph.sot_talos_balance.talos.control_manager_conf as cm_conf
 import dynamic_graph.sot_talos_balance.talos.ft_calibration_conf as ft_conf
 import dynamic_graph.sot_talos_balance.talos.parameter_server_conf as param_server_conf
-from dynamic_graph.sot_talos_balance.create_entities_utils import *
-
 from dynamic_graph import plug
+from dynamic_graph.sot.core.derivator import Derivator_of_Vector
+from dynamic_graph.sot.core.feature_posture import FeaturePosture
+from dynamic_graph.sot.core.matrix_util import matrixToTuple
+from dynamic_graph.sot.core.meta_tasks_kine import MetaTaskKine6d, MetaTaskKineCom, gotoNd
+from dynamic_graph.sot.core.sot import SOT
+from dynamic_graph.sot.core.task import Task
+from dynamic_graph.sot.dynamic_pinocchio import DynamicPinocchio
+from dynamic_graph.sot_talos_balance.create_entities_utils import *
+from dynamic_graph.tracer_real_time import TracerRealTime
+from rospkg import RosPack
 
 
 def init_sot_talos_balance(robot, test_folder):
@@ -42,6 +39,7 @@ def init_sot_talos_balance(robot, test_folder):
     robot.dynamic.createOpPoint('LF', robot.OperationalPointsMap['left-ankle'])
     robot.dynamic.createOpPoint('RF', robot.OperationalPointsMap['right-ankle'])
     robot.dynamic.createOpPoint('WT', robot.OperationalPointsMap['waist'])
+    robot.dynamic.add_signals()
     robot.dynamic.LF.recompute(0)
     robot.dynamic.RF.recompute(0)
     robot.dynamic.WT.recompute(0)
@@ -97,8 +95,8 @@ def init_sot_talos_balance(robot, test_folder):
     robot.waistMix.setSignalNumber(3)
     robot.waistMix.addSelec(1, 0, 3)
     robot.waistMix.addSelec(2, 3, 3)
-    robot.waistMix.default.value = [0.0] * 6
-    robot.waistMix.signal("sin1").value = [0.0] * 3
+    # robot.waistMix.default.value = np.array([0.0] * 6)
+    robot.waistMix.signal("sin1").value = np.array([0.0] * 3)
     plug(robot.waistTrajGen.x, robot.waistMix.signal("sin2"))
 
     robot.waistToMatrix = PoseRollPitchYawToMatrixHomo('w2m')
@@ -155,9 +153,10 @@ def init_sot_talos_balance(robot, test_folder):
     robot.rdynamic = DynamicPinocchio("real_dynamics")
     robot.rdynamic.setModel(robot.dynamic.model)
     robot.rdynamic.setData(robot.rdynamic.model.createData())
+    robot.rdynamic.add_signals()
     plug(robot.base_estimator.q, robot.rdynamic.position)
-    robot.rdynamic.velocity.value = [0.0] * robotDim
-    robot.rdynamic.acceleration.value = [0.0] * robotDim
+    robot.rdynamic.velocity.value = np.array([0.0] * robotDim)
+    robot.rdynamic.acceleration.value = np.array([0.0] * robotDim)
 
     # --- CoM Estimation
     cdc_estimator = DcmEstimator('cdc_estimator')
@@ -182,6 +181,7 @@ def init_sot_talos_balance(robot, test_folder):
     zmp_estimator = SimpleZmpEstimator("zmpEst")
     robot.rdynamic.createOpPoint('sole_LF', 'left_sole_link')
     robot.rdynamic.createOpPoint('sole_RF', 'right_sole_link')
+    robot.rdynamic.add_signals()
     plug(robot.rdynamic.sole_LF, zmp_estimator.poseLeft)
     plug(robot.rdynamic.sole_RF, zmp_estimator.poseRight)
     plug(robot.ftc.left_foot_force_out, zmp_estimator.wrenchLeft)
@@ -192,8 +192,8 @@ def init_sot_talos_balance(robot, test_folder):
     # -------------------------- ADMITTANCE CONTROL --------------------------
 
     # --- DCM controller
-    Kp_dcm = [8.0] * 3
-    Ki_dcm = [0.0, 0.0, 0.0]  # zero (to be set later)
+    Kp_dcm = np.array([8.0] * 3)
+    Ki_dcm = np.array([0.0, 0.0, 0.0])  # zero (to be set later)
     gamma_dcm = 0.2
 
     dcm_controller = DcmController("dcmCtrl")
@@ -214,10 +214,10 @@ def init_sot_talos_balance(robot, test_folder):
 
     robot.dcm_control = dcm_controller
 
-    Ki_dcm = [1.0, 1.0, 1.0]  # this value is employed later
+    Ki_dcm = np.array([1.0, 1.0, 1.0])  # this value is employed later
 
     # --- CoM admittance controller
-    Kp_adm = [0.0, 0.0, 0.0]  # zero (to be set later)
+    Kp_adm = np.array([0.0, 0.0, 0.0])  # zero (to be set later)
 
     com_admittance_control = ComAdmittanceController("comAdmCtrl")
     com_admittance_control.Kp.value = Kp_adm
@@ -226,7 +226,7 @@ def init_sot_talos_balance(robot, test_folder):
     plug(robot.wp.acomDes, com_admittance_control.ddcomDes)
 
     com_admittance_control.init(dt)
-    com_admittance_control.setState(robot.wp.comDes.value, [0.0, 0.0, 0.0])
+    com_admittance_control.setState(robot.wp.comDes.value, np.array([0.0, 0.0, 0.0]))
 
     robot.com_admittance_control = com_admittance_control
 
@@ -242,7 +242,7 @@ def init_sot_talos_balance(robot, test_folder):
     robot.taskUpperBody = Task('task_upper_body')
     robot.taskUpperBody.feature = FeaturePosture('feature_upper_body')
 
-    q = list(robot.dynamic.position.value)
+    q = robot.dynamic.position.value
     robot.taskUpperBody.feature.state.value = q
     robot.taskUpperBody.feature.posture.value = q
 
@@ -313,6 +313,8 @@ def init_sot_talos_balance(robot, test_folder):
     robot.sot.setSize(robot.dynamic.getDimension())
 
     # --- Plug SOT control to device through control manager
+    robot.cm.add_commands()
+    robot.cm.add_signals()
     plug(robot.sot.control, robot.cm.ctrl_sot_input)
     plug(robot.cm.u_safe, robot.device.control)
 
