@@ -1,21 +1,24 @@
 # flake8: noqa
 from math import sqrt
 
+from rospkg import RosPack
+
 import dynamic_graph.sot_talos_balance.talos.base_estimator_conf as base_estimator_conf
 import dynamic_graph.sot_talos_balance.talos.control_manager_conf as cm_conf
 import dynamic_graph.sot_talos_balance.talos.ft_calibration_conf as ft_conf
 import dynamic_graph.sot_talos_balance.talos.parameter_server_conf as param_server_conf
 from dynamic_graph import plug
+from dynamic_graph.sot.core import Flags
 from dynamic_graph.sot.core.derivator import Derivator_of_Vector
 from dynamic_graph.sot.core.feature_posture import FeaturePosture
 from dynamic_graph.sot.core.matrix_util import matrixToTuple
 from dynamic_graph.sot.core.meta_tasks_kine import MetaTaskKine6d, MetaTaskKineCom, gotoNd
+from dynamic_graph.sot.core.operator import Mix_of_vector
 from dynamic_graph.sot.core.sot import SOT
 from dynamic_graph.sot.core.task import Task
 from dynamic_graph.sot.dynamic_pinocchio import DynamicPinocchio
 from dynamic_graph.sot_talos_balance.create_entities_utils import *
 from dynamic_graph.tracer_real_time import TracerRealTime
-from rospkg import RosPack
 
 
 def init_sot_talos_balance(robot, test_folder):
@@ -95,7 +98,8 @@ def init_sot_talos_balance(robot, test_folder):
     robot.waistMix.setSignalNumber(3)
     robot.waistMix.addSelec(1, 0, 3)
     robot.waistMix.addSelec(2, 3, 3)
-    # robot.waistMix.default.value = np.array([0.0] * 6)
+    # robot.waistMix.add_signals()
+    robot.waistMix.signal('default').value = np.array([0.0] * 6)
     robot.waistMix.signal("sin1").value = np.array([0.0] * 3)
     plug(robot.waistTrajGen.x, robot.waistMix.signal("sin2"))
 
@@ -290,7 +294,7 @@ def init_sot_talos_balance(robot, test_folder):
     robot.taskComH = MetaTaskKineCom(robot.dynamic, name='comH')
     plug(robot.wp.comDes, robot.taskComH.featureDes.errorIN)
     robot.taskComH.task.controlGain.value = 100.
-    robot.taskComH.feature.selec.value = '100'
+    robot.taskComH.feature.selec.value = Flags('100')
 
     # --- COM
     robot.taskCom = MetaTaskKineCom(robot.dynamic)
@@ -298,14 +302,14 @@ def init_sot_talos_balance(robot, test_folder):
     plug(robot.com_admittance_control.dcomRef, robot.taskCom.featureDes.errordotIN)
     robot.taskCom.task.controlGain.value = 0
     robot.taskCom.task.setWithDerivative(True)
-    robot.taskCom.feature.selec.value = '011'
+    robot.taskCom.feature.selec.value = Flags('011')
 
     # --- Waist
     robot.keepWaist = MetaTaskKine6d('keepWaist', robot.dynamic, 'WT', robot.OperationalPointsMap['waist'])
     robot.keepWaist.feature.frame('desired')
     robot.keepWaist.gain.setConstant(300)
     plug(robot.wp.waistDes, robot.keepWaist.featureDes.position)
-    robot.keepWaist.feature.selec.value = '111000'
+    robot.keepWaist.feature.selec.value = Flags('111000')
     locals()['keepWaist'] = robot.keepWaist
 
     # --- SOT solver

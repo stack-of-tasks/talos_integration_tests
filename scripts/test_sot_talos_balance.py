@@ -44,13 +44,14 @@ time.sleep(5)
 # Connect ZMP reference and reset controllers
 print('Connect ZMP reference')
 handleRunCommandClient('from dynamic_graph import plug')
+handleRunCommandClient('import numpy as np')
 handleRunCommandClient('plug(robot.zmp_estimator.emergencyStop,robot.cm.emergencyStop_zmp)')
 handleRunCommandClient('plug(robot.dcm_control.zmpRef,robot.com_admittance_control.zmpDes)')
-handleRunCommandClient('robot.com_admittance_control.setState(robot.wp.comDes.value,[0.0,0.0,0.0])')
-handleRunCommandClient('Kp_adm = [15.0, 15.0, 0.0]')  # this value is employed later
+handleRunCommandClient('robot.com_admittance_control.setState(robot.wp.comDes.value,np.array([0.0,0.0,0.0]))')
+handleRunCommandClient('Kp_adm = np.array([15.0, 15.0, 0.0])')  # this value is employed later
 handleRunCommandClient('robot.com_admittance_control.Kp.value = Kp_adm')
 handleRunCommandClient('robot.dcm_control.resetDcmIntegralError()')
-handleRunCommandClient('Ki_dcm = [1.0, 1.0, 1.0]')  # this value is employed later
+handleRunCommandClient('Ki_dcm = np.array([1.0, 1.0, 1.0])')  # this value is employed later
 handleRunCommandClient('robot.dcm_control.Ki.value = Ki_dcm')
 
 print('Executing the trajectory')
