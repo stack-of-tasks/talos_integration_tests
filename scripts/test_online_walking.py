@@ -3,6 +3,7 @@ import sys
 import time
 
 import rospkg
+
 import rospy
 from dynamic_graph.sot_talos_balance.utils.run_test_utils import runCommandClient
 from std_srvs.srv import Empty
@@ -63,24 +64,25 @@ time.sleep(5)
 # Connect ZMP reference and reset controllers
 print('Connect ZMP reference')
 handleRunCommandClient('from dynamic_graph import plug')
+handleRunCommandClient('import numpy as np')
 handleRunCommandClient('plug(robot.zmp_estimator.emergencyStop,robot.cm.emergencyStop_zmp)')
 handleRunCommandClient('plug(robot.dcm_control.zmpRef,robot.com_admittance_control.zmpDes)')
-handleRunCommandClient('robot.com_admittance_control.setState(robot.wp.comDes.value,[0.0,0.0,0.0])')
-handleRunCommandClient('Kp_adm = [15.0, 15.0, 0.0]')  # this value is employed later
+handleRunCommandClient('robot.com_admittance_control.setState(robot.wp.comDes.value,np.array([0.0,0.0,0.0]))')
+handleRunCommandClient('Kp_adm = np.array([15.0, 15.0, 0.0])')  # this value is employed later
 handleRunCommandClient('robot.com_admittance_control.Kp.value = Kp_adm')
 handleRunCommandClient('robot.dcm_control.resetDcmIntegralError()')
-handleRunCommandClient('Ki_dcm = [1.0, 1.0, 1.0]')  # this value is employed later
+handleRunCommandClient('Ki_dcm = np.array([1.0, 1.0, 1.0])')  # this value is employed later
 handleRunCommandClient('robot.dcm_control.Ki.value = Ki_dcm')
 
 print('Executing the trajectory')
 handleRunCommandClient('robot.triggerPG.sin.value = 1')
 
 time.sleep(4)
-handleRunCommandClient('robot.pg.velocitydes.value=(0.2,0.0,0.0)')
+handleRunCommandClient('robot.pg.velocitydes.value=np.array(0.2,0.0,0.0)')
 time.sleep(7)
-handleRunCommandClient('robot.pg.velocitydes.value=(0.3,0.0,0.0)')
+handleRunCommandClient('robot.pg.velocitydes.value=np.array(0.3,0.0,0.0)')
 time.sleep(9)
-handleRunCommandClient('robot.pg.velocitydes.value=(0.0,0.0,0.0)')
+handleRunCommandClient('robot.pg.velocitydes.value=np.array(0.0,0.0,0.0)')
 
 time.sleep(9)
 handleRunCommandClient('from sot_talos_balance.create_entities_utils import dump_tracer')
