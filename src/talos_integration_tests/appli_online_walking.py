@@ -293,7 +293,7 @@ def init_online_walking(robot):
     robot.taskComH = MetaTaskKineCom(robot.dynamic, name='comH')
     plug(robot.wp.comDes, robot.taskComH.featureDes.errorIN)
     robot.taskComH.task.controlGain.value = 100.
-    robot.taskComH.feature.selec.value = Flags('100')
+    robot.taskComH.feature.selec.value = Flags('001')
 
     # --- COM
     robot.taskCom = MetaTaskKineCom(robot.dynamic)
@@ -301,7 +301,7 @@ def init_online_walking(robot):
     plug(robot.com_admittance_control.dcomRef, robot.taskCom.featureDes.errordotIN)
     robot.taskCom.task.controlGain.value = 0
     robot.taskCom.task.setWithDerivative(True)
-    robot.taskCom.feature.selec.value = Flags('011')
+    robot.taskCom.feature.selec.value = Flags('110')
 
     # --- Waist
 
@@ -309,7 +309,7 @@ def init_online_walking(robot):
     robot.keepWaist.feature.frame('desired')
     robot.keepWaist.gain.setConstant(300)
     plug(robot.wp.waistDes, robot.keepWaist.featureDes.position)  #de base
-    robot.keepWaist.feature.selec.value = Flags('111000')
+    robot.keepWaist.feature.selec.value = Flags('000111')
     locals()['keepWaist'] = robot.keepWaist
 
     # --- SOT solver

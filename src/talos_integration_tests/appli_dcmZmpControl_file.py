@@ -294,7 +294,7 @@ def init_sot_talos_balance(robot, test_folder):
     robot.taskComH = MetaTaskKineCom(robot.dynamic, name='comH')
     plug(robot.wp.comDes, robot.taskComH.featureDes.errorIN)
     robot.taskComH.task.controlGain.value = 100.
-    robot.taskComH.feature.selec.value = Flags('100')
+    robot.taskComH.feature.selec.value = Flags('001')
 
     # --- COM
     robot.taskCom = MetaTaskKineCom(robot.dynamic)
@@ -302,14 +302,14 @@ def init_sot_talos_balance(robot, test_folder):
     plug(robot.com_admittance_control.dcomRef, robot.taskCom.featureDes.errordotIN)
     robot.taskCom.task.controlGain.value = 0
     robot.taskCom.task.setWithDerivative(True)
-    robot.taskCom.feature.selec.value = Flags('011')
+    robot.taskCom.feature.selec.value = Flags('110')
 
     # --- Waist
     robot.keepWaist = MetaTaskKine6d('keepWaist', robot.dynamic, 'WT', robot.OperationalPointsMap['waist'])
     robot.keepWaist.feature.frame('desired')
     robot.keepWaist.gain.setConstant(300)
     plug(robot.wp.waistDes, robot.keepWaist.featureDes.position)
-    robot.keepWaist.feature.selec.value = Flags('111000')
+    robot.keepWaist.feature.selec.value = Flags('000111')
     locals()['keepWaist'] = robot.keepWaist
 
     # --- SOT solver
