@@ -85,8 +85,8 @@ def init_online_walking(robot):
     plug(robot.dynamic.LF, robot.pg.leftfootcurrentpos)
     plug(robot.dynamic.RF, robot.pg.rightfootcurrentpos)
     robotDim = len(robot.dynamic.velocity.value)
-    robot.pg.motorcontrol.value = np.array(robotDim * (0, ))
-    robot.pg.zmppreviouscontroller.value = np.array((0, 0, 0))
+    robot.pg.motorcontrol.value = np.zeros(robotDim)
+    robot.pg.zmppreviouscontroller.value = np.zeros(3)
 
     robot.pg.initState()
 
@@ -157,8 +157,8 @@ def init_online_walking(robot):
     robot.rdynamic.setData(robot.rdynamic.model.createData())
     robot.rdynamic.add_signals()
     plug(robot.base_estimator.q, robot.rdynamic.position)
-    robot.rdynamic.velocity.value = np.array([0.0] * robotDim)
-    robot.rdynamic.acceleration.value = np.array([0.0] * robotDim)
+    robot.rdynamic.velocity.value = np.zeros(robotDim)
+    robot.rdynamic.acceleration.value = np.zeros(robotDim)
 
     # --- CoM Estimation
     cdc_estimator = DcmEstimator('cdc_estimator')
