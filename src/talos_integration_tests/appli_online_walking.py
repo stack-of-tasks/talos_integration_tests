@@ -56,7 +56,7 @@ def init_online_walking(robot):
     robot.pg = PatternGenerator('pg')
 
     # MODIFIED WITH MY PATHS
-    talos_data_folder = rospack.get_path('talos_data')
+    talos_data_folder = rospack.get_path('jrl-walkgen')
     robot.pg.setURDFpath(talos_data_folder + '/urdf/talos_reduced_wpg.urdf')
     robot.pg.setSRDFpath(talos_data_folder + '/srdf/talos_wpg.srdf')
     ## END MODIFIED
