@@ -1,24 +1,32 @@
 # flake8: noqa
 from math import sqrt
 
-from rospkg import RosPack
-
 import dynamic_graph.sot_talos_balance.talos.base_estimator_conf as base_estimator_conf
 import dynamic_graph.sot_talos_balance.talos.control_manager_conf as cm_conf
 import dynamic_graph.sot_talos_balance.talos.ft_calibration_conf as ft_conf
 import dynamic_graph.sot_talos_balance.talos.parameter_server_conf as param_server_conf
+import numpy as np
 from dynamic_graph import plug
 from dynamic_graph.sot.core import Flags
 from dynamic_graph.sot.core.derivator import Derivator_of_Vector
 from dynamic_graph.sot.core.feature_posture import FeaturePosture
 from dynamic_graph.sot.core.matrix_util import matrixToTuple
 from dynamic_graph.sot.core.meta_tasks_kine import MetaTaskKine6d, MetaTaskKineCom, gotoNd
-from dynamic_graph.sot.core.operator import Mix_of_vector
+from dynamic_graph.sot.core.operator import MatrixHomoToPoseQuaternion, Mix_of_vector, PoseRollPitchYawToMatrixHomo
 from dynamic_graph.sot.core.sot import SOT
 from dynamic_graph.sot.core.task import Task
 from dynamic_graph.sot.dynamic_pinocchio import DynamicPinocchio
-from dynamic_graph.sot_talos_balance.create_entities_utils import *
+from dynamic_graph.sot_talos_balance import create_entities_utils as utils
+from dynamic_graph.sot_talos_balance.boolean_identity import BooleanIdentity
+from dynamic_graph.sot_talos_balance.com_admittance_controller import ComAdmittanceController
+from dynamic_graph.sot_talos_balance.dcm_controller import DcmController
+from dynamic_graph.sot_talos_balance.dcm_estimator import DcmEstimator
+from dynamic_graph.sot_talos_balance.dummy_dcm_estimator import DummyDcmEstimator
+from dynamic_graph.sot_talos_balance.dummy_walking_pattern_generator import DummyWalkingPatternGenerator
+from dynamic_graph.sot_talos_balance.euler_to_quat import EulerToQuat
+from dynamic_graph.sot_talos_balance.simple_zmp_estimator import SimpleZmpEstimator
 from dynamic_graph.tracer_real_time import TracerRealTime
+from rospkg import RosPack
 
 
 def init_sot_talos_balance(robot, test_folder):
@@ -36,7 +44,7 @@ def init_sot_talos_balance(robot, test_folder):
     omega = sqrt(g / h)
 
     # --- Parameter server
-    robot.param_server = create_parameter_server(param_server_conf, dt)
+    robot.param_server = utils.create_parameter_server(param_server_conf, dt)
 
     # --- Initial feet and waist
     robot.dynamic.createOpPoint('LF', robot.OperationalPointsMap['left-ankle'])
@@ -61,13 +69,13 @@ def init_sot_talos_balance(robot, test_folder):
     robot.triggerTrajGen.sin.value = 0
 
     # --- CoM
-    robot.comTrajGen = create_com_trajectory_generator(dt, robot)
+    robot.comTrajGen = utils.create_com_trajectory_generator(dt, robot)
     robot.comTrajGen.x.recompute(0)  # trigger computation of initial value
     robot.comTrajGen.playTrajectoryFile(folder + 'CoM.dat')
     plug(robot.triggerTrajGen.sout, robot.comTrajGen.trigger)
 
     # --- Left foot
-    robot.lfTrajGen = create_pose_rpy_trajectory_generator(dt, robot, 'LF')
+    robot.lfTrajGen = utils.create_pose_rpy_trajectory_generator(dt, robot, 'LF')
     robot.lfTrajGen.x.recompute(0)  # trigger computation of initial value
 
     robot.lfToMatrix = PoseRollPitchYawToMatrixHomo('lf2m')
@@ -76,7 +84,7 @@ def init_sot_talos_balance(robot, test_folder):
     plug(robot.triggerTrajGen.sout, robot.lfTrajGen.trigger)
 
     # --- Right foot
-    robot.rfTrajGen = create_pose_rpy_trajectory_generator(dt, robot, 'RF')
+    robot.rfTrajGen = utils.create_pose_rpy_trajectory_generator(dt, robot, 'RF')
     robot.rfTrajGen.x.recompute(0)  # trigger computation of initial value
 
     robot.rfToMatrix = PoseRollPitchYawToMatrixHomo('rf2m')
@@ -85,13 +93,13 @@ def init_sot_talos_balance(robot, test_folder):
     plug(robot.triggerTrajGen.sout, robot.rfTrajGen.trigger)
 
     # --- ZMP
-    robot.zmpTrajGen = create_zmp_trajectory_generator(dt, robot)
+    robot.zmpTrajGen = utils.create_zmp_trajectory_generator(dt, robot)
     robot.zmpTrajGen.x.recompute(0)  # trigger computation of initial value
     # robot.zmpTrajGen.playTrajectoryFile(folder + 'ZMP.dat')
     plug(robot.triggerTrajGen.sout, robot.zmpTrajGen.trigger)
 
     # --- Waist
-    robot.waistTrajGen = create_orientation_rpy_trajectory_generator(dt, robot, 'WT')
+    robot.waistTrajGen = utils.create_orientation_rpy_trajectory_generator(dt, robot, 'WT')
     robot.waistTrajGen.x.recompute(0)  # trigger computation of initial value
 
     robot.waistMix = Mix_of_vector("waistMix")
@@ -137,9 +145,9 @@ def init_sot_talos_balance(robot, test_folder):
     # -------------------------- ESTIMATION --------------------------
 
     # --- Base Estimation
-    robot.device_filters = create_device_filters(robot, dt)
-    robot.imu_filters = create_imu_filters(robot, dt)
-    robot.base_estimator = create_base_estimator(robot, dt, base_estimator_conf)
+    robot.device_filters = utils.create_device_filters(robot, dt)
+    robot.imu_filters = utils.create_imu_filters(robot, dt)
+    robot.base_estimator = utils.create_base_estimator(robot, dt, base_estimator_conf)
 
     robot.m2qLF = MatrixHomoToPoseQuaternion('m2qLF')
     plug(robot.dynamic.LF, robot.m2qLF.sin)
@@ -179,7 +187,7 @@ def init_sot_talos_balance(robot, test_folder):
     robot.estimator = estimator
 
     # --- Force calibration
-    robot.ftc = create_ft_calibrator(robot, ft_conf)
+    robot.ftc = utils.create_ft_calibrator(robot, ft_conf)
 
     # --- ZMP estimation
     zmp_estimator = SimpleZmpEstimator("zmpEst")
@@ -235,7 +243,7 @@ def init_sot_talos_balance(robot, test_folder):
     robot.com_admittance_control = com_admittance_control
 
     # --- Control Manager
-    robot.cm = create_ctrl_manager(cm_conf, dt, robot_name='robot')
+    robot.cm = utils.create_ctrl_manager(cm_conf, dt, robot_name='robot')
     robot.cm.addCtrlMode('sot_input')
     robot.cm.setCtrlMode('all', 'sot_input')
     robot.cm.addEmergencyStopSIN('zmp')
@@ -339,48 +347,52 @@ def init_sot_talos_balance(robot, test_folder):
     # -------------------------- PLOTS --------------------------
 
     # --- ROS PUBLISHER
-    robot.publisher = create_rospublish(robot, 'robot_publisher')
+    robot.publisher = utils.create_rospublish(robot, 'robot_publisher')
 
-    create_topic(robot.publisher, robot.device, 'state', robot=robot, data_type='vector')
-    create_topic(robot.publisher, robot.base_estimator, 'q', robot=robot, data_type='vector')
-    #create_topic(robot.publisher, robot.stf, 'q', robot = robot, data_type='vector')
+    utils.create_topic(robot.publisher, robot.device, 'state', robot=robot, data_type='vector')
+    utils.create_topic(robot.publisher, robot.base_estimator, 'q', robot=robot, data_type='vector')
+    # utils.create_topic(robot.publisher, robot.stf, 'q', robot = robot, data_type='vector')
 
-    create_topic(robot.publisher, robot.comTrajGen, 'x', robot=robot, data_type='vector')  # generated CoM
-    create_topic(robot.publisher, robot.comTrajGen, 'dx', robot=robot, data_type='vector')  # generated CoM velocity
-    create_topic(robot.publisher, robot.comTrajGen, 'ddx', robot=robot,
-                 data_type='vector')  # generated CoM acceleration
+    utils.create_topic(robot.publisher, robot.comTrajGen, 'x', robot=robot, data_type='vector')  # generated CoM
+    utils.create_topic(robot.publisher, robot.comTrajGen, 'dx', robot=robot,
+                       data_type='vector')  # generated CoM velocity
+    utils.create_topic(robot.publisher, robot.comTrajGen, 'ddx', robot=robot,
+                       data_type='vector')  # generated CoM acceleration
 
-    create_topic(robot.publisher, robot.wp, 'comDes', robot=robot, data_type='vector')  # desired CoM
+    utils.create_topic(robot.publisher, robot.wp, 'comDes', robot=robot, data_type='vector')  # desired CoM
 
-    create_topic(robot.publisher, robot.cdc_estimator, 'c', robot=robot, data_type='vector')  # estimated CoM
-    create_topic(robot.publisher, robot.cdc_estimator, 'dc', robot=robot, data_type='vector')  # estimated CoM velocity
+    utils.create_topic(robot.publisher, robot.cdc_estimator, 'c', robot=robot, data_type='vector')  # estimated CoM
+    utils.create_topic(robot.publisher, robot.cdc_estimator, 'dc', robot=robot,
+                       data_type='vector')  # estimated CoM velocity
 
-    create_topic(robot.publisher, robot.com_admittance_control, 'comRef', robot=robot,
-                 data_type='vector')  # reference CoM
-    create_topic(robot.publisher, robot.dynamic, 'com', robot=robot, data_type='vector')  # resulting SOT CoM
+    utils.create_topic(robot.publisher, robot.com_admittance_control, 'comRef', robot=robot,
+                       data_type='vector')  # reference CoM
+    utils.create_topic(robot.publisher, robot.dynamic, 'com', robot=robot, data_type='vector')  # resulting SOT CoM
 
-    create_topic(robot.publisher, robot.dcm_control, 'dcmDes', robot=robot, data_type='vector')  # desired DCM
-    create_topic(robot.publisher, robot.estimator, 'dcm', robot=robot, data_type='vector')  # estimated DCM
+    utils.create_topic(robot.publisher, robot.dcm_control, 'dcmDes', robot=robot, data_type='vector')  # desired DCM
+    utils.create_topic(robot.publisher, robot.estimator, 'dcm', robot=robot, data_type='vector')  # estimated DCM
 
-    create_topic(robot.publisher, robot.zmpTrajGen, 'x', robot=robot, data_type='vector')  # generated ZMP
-    create_topic(robot.publisher, robot.wp, 'zmpDes', robot=robot, data_type='vector')  # desired ZMP
-    create_topic(robot.publisher, robot.dynamic, 'zmp', robot=robot, data_type='vector')  # SOT ZMP
-    create_topic(robot.publisher, robot.zmp_estimator, 'zmp', robot=robot, data_type='vector')  # estimated ZMP
-    create_topic(robot.publisher, robot.dcm_control, 'zmpRef', robot=robot, data_type='vector')  # reference ZMP
+    utils.create_topic(robot.publisher, robot.zmpTrajGen, 'x', robot=robot, data_type='vector')  # generated ZMP
+    utils.create_topic(robot.publisher, robot.wp, 'zmpDes', robot=robot, data_type='vector')  # desired ZMP
+    utils.create_topic(robot.publisher, robot.dynamic, 'zmp', robot=robot, data_type='vector')  # SOT ZMP
+    utils.create_topic(robot.publisher, robot.zmp_estimator, 'zmp', robot=robot, data_type='vector')  # estimated ZMP
+    utils.create_topic(robot.publisher, robot.dcm_control, 'zmpRef', robot=robot, data_type='vector')  # reference ZMP
 
-    create_topic(robot.publisher, robot.waistTrajGen, 'x', robot=robot,
-                 data_type='vector')  # desired waist orientation
+    utils.create_topic(robot.publisher, robot.waistTrajGen, 'x', robot=robot,
+                       data_type='vector')  # desired waist orientation
 
-    create_topic(robot.publisher, robot.lfTrajGen, 'x', robot=robot, data_type='vector')  # desired left foot pose
-    create_topic(robot.publisher, robot.rfTrajGen, 'x', robot=robot, data_type='vector')  # desired right foot pose
+    utils.create_topic(robot.publisher, robot.lfTrajGen, 'x', robot=robot,
+                       data_type='vector')  # desired left foot pose
+    utils.create_topic(robot.publisher, robot.rfTrajGen, 'x', robot=robot,
+                       data_type='vector')  # desired right foot pose
 
-    create_topic(robot.publisher, robot.ftc, 'left_foot_force_out', robot=robot,
-                 data_type='vector')  # calibrated left wrench
-    create_topic(robot.publisher, robot.ftc, 'right_foot_force_out', robot=robot,
-                 data_type='vector')  # calibrated right wrench
+    utils.create_topic(robot.publisher, robot.ftc, 'left_foot_force_out', robot=robot,
+                       data_type='vector')  # calibrated left wrench
+    utils.create_topic(robot.publisher, robot.ftc, 'right_foot_force_out', robot=robot,
+                       data_type='vector')  # calibrated right wrench
 
-    create_topic(robot.publisher, robot.dynamic, 'LF', robot=robot, data_type='matrixHomo')  # left foot
-    create_topic(robot.publisher, robot.dynamic, 'RF', robot=robot, data_type='matrixHomo')  # right foot
+    utils.create_topic(robot.publisher, robot.dynamic, 'LF', robot=robot, data_type='matrixHomo')  # left foot
+    utils.create_topic(robot.publisher, robot.dynamic, 'RF', robot=robot, data_type='matrixHomo')  # right foot
 
     # --- TRACER
     robot.tracer = TracerRealTime("com_tracer")
@@ -388,26 +400,26 @@ def init_sot_talos_balance(robot, test_folder):
     robot.tracer.open('/tmp', 'dg_', '.dat')
     robot.device.after.addSignal('{0}.triger'.format(robot.tracer.name))
 
-    addTrace(robot.tracer, robot.wp, 'comDes')  # desired CoM
+    utils.addTrace(robot.tracer, robot.wp, 'comDes')  # desired CoM
 
-    addTrace(robot.tracer, robot.cdc_estimator, 'c')  # estimated CoM
-    addTrace(robot.tracer, robot.cdc_estimator, 'dc')  # estimated CoM velocity
+    utils.addTrace(robot.tracer, robot.cdc_estimator, 'c')  # estimated CoM
+    utils.addTrace(robot.tracer, robot.cdc_estimator, 'dc')  # estimated CoM velocity
 
-    addTrace(robot.tracer, robot.com_admittance_control, 'comRef')  # reference CoM
-    addTrace(robot.tracer, robot.dynamic, 'com')  # resulting SOT CoM
+    utils.addTrace(robot.tracer, robot.com_admittance_control, 'comRef')  # reference CoM
+    utils.addTrace(robot.tracer, robot.dynamic, 'com')  # resulting SOT CoM
 
-    addTrace(robot.tracer, robot.dcm_control, 'dcmDes')  # desired DCM
-    addTrace(robot.tracer, robot.estimator, 'dcm')  # estimated DCM
+    utils.addTrace(robot.tracer, robot.dcm_control, 'dcmDes')  # desired DCM
+    utils.addTrace(robot.tracer, robot.estimator, 'dcm')  # estimated DCM
 
-    addTrace(robot.tracer, robot.dcm_control, 'zmpDes')  # desired ZMP
-    addTrace(robot.tracer, robot.dynamic, 'zmp')  # SOT ZMP
-    addTrace(robot.tracer, robot.zmp_estimator, 'zmp')  # estimated ZMP
-    addTrace(robot.tracer, robot.dcm_control, 'zmpRef')  # reference ZMP
+    utils.addTrace(robot.tracer, robot.dcm_control, 'zmpDes')  # desired ZMP
+    utils.addTrace(robot.tracer, robot.dynamic, 'zmp')  # SOT ZMP
+    utils.addTrace(robot.tracer, robot.zmp_estimator, 'zmp')  # estimated ZMP
+    utils.addTrace(robot.tracer, robot.dcm_control, 'zmpRef')  # reference ZMP
 
-    addTrace(robot.tracer, robot.ftc, 'left_foot_force_out')  # calibrated left wrench
-    addTrace(robot.tracer, robot.ftc, 'right_foot_force_out')  # calibrated right wrench
+    utils.addTrace(robot.tracer, robot.ftc, 'left_foot_force_out')  # calibrated left wrench
+    utils.addTrace(robot.tracer, robot.ftc, 'right_foot_force_out')  # calibrated right wrench
 
-    addTrace(robot.tracer, robot.dynamic, 'LF')  # left foot
-    addTrace(robot.tracer, robot.dynamic, 'RF')  # right foot
+    utils.addTrace(robot.tracer, robot.dynamic, 'LF')  # left foot
+    utils.addTrace(robot.tracer, robot.dynamic, 'RF')  # right foot
 
     robot.tracer.start()
