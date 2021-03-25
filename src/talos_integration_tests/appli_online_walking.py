@@ -1,6 +1,8 @@
 # flake8: noqa
 from math import sqrt
 
+from rospkg import RosPack
+
 import dynamic_graph.sot_talos_balance.talos.base_estimator_conf as base_estimator_conf
 import dynamic_graph.sot_talos_balance.talos.control_manager_conf as cm_conf
 import dynamic_graph.sot_talos_balance.talos.ft_calibration_conf as ft_conf
@@ -15,9 +17,9 @@ from dynamic_graph.sot.core.sot import SOT
 from dynamic_graph.sot.core.task import Task
 from dynamic_graph.sot.dynamic_pinocchio import DynamicPinocchio
 from dynamic_graph.sot.pattern_generator import PatternGenerator
+from dynamic_graph.sot_talos_balance.boolean_identity import BooleanIdentity
 from dynamic_graph.sot_talos_balance.create_entities_utils import *
 from dynamic_graph.tracer_real_time import TracerRealTime
-from rospkg import RosPack
 
 
 def init_online_walking(robot):
