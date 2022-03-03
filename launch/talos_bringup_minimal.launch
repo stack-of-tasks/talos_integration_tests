@@ -6,11 +6,11 @@
 
 
   <!-- Robot state publisher -->
-  <node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher">
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
     <param name="publish_frequency" type="double" value="100.0" />
     <param name="tf_prefix" type="string" value="" />
   </node>
-  
+
   <!-- Robot model -->
   <include file="$(find talos_description)/robots/upload.launch" >
      <arg name="robot" value="$(arg robot)"/>
