@@ -20,17 +20,15 @@ set(WARNING_CXX_FLAGS "${WARNING_CXX_FLAGS} -Werror=format-security")
 
 include(cmake/base.cmake)
 include(cmake/ros.cmake)
-include(cmake/python.cmake)
 
 # Project definition
 COMPUTE_PROJECT_ARGS(PROJECT_ARGS LANGUAGES CXX)
 PROJECT(${PROJECT_NAME} ${PROJECT_ARGS})
 
 find_package(PkgConfig REQUIRED)
+find_package(eigenpy 2.7.10 REQUIRED)
 
 # Project dependencies
-FINDPYTHON()
-
 SET(CATKIN_REQUIRED_COMPONENTS
   rospy
   talos_gazebo
