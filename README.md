@@ -35,9 +35,9 @@ To launch:
 ```
 rostest talos_integration_tests test_kine.test
 ```
-or 
+or
 ```
-rosrun talos_integration_tests start_talos_gazebo_kine.py 
+rosrun talos_integration_tests start_talos_gazebo_kine.py
 ```
 The robot is supposed to move forward its right hand up to position [0.5723,-0.2885,0.7745]
 
@@ -52,7 +52,7 @@ To launch:
 ```
 rostest talos_integration_tests test_sot_talos_balance.test
 ```
-or 
+or
 ```
 rosrun talos_integration_tests start_sot_talos_balance.py
 ```
@@ -69,7 +69,7 @@ To launch:
 ```
 rostest talos_integration_tests test_online_walking.test
 ```
-or 
+or
 ```
 rosrun talos_integration_tests start_sot_online_walking.py
 ```

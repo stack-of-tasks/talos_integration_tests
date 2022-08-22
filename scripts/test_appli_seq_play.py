@@ -12,11 +12,11 @@ except NameError:
 
 
 def launchScript(code, title, description=""):
-    input(title + ':   ' + description)
+    input(title + ":   " + description)
     rospy.loginfo(title)
     rospy.loginfo(code)
     for line in code:
-        if line and not line.strip().startswith('#'):
+        if line and not line.strip().startswith("#"):
             print(line)
             answer = runCommandClient(str(line))
             rospy.logdebug(answer)
@@ -27,21 +27,21 @@ def launchScript(code, title, description=""):
 # Waiting for services
 try:
     rospy.loginfo("Waiting for run_command")
-    rospy.wait_for_service('/run_command')
+    rospy.wait_for_service("/run_command")
     rospy.loginfo("...ok")
 
     rospy.loginfo("Waiting for start_dynamic_graph")
-    rospy.wait_for_service('/start_dynamic_graph')
+    rospy.wait_for_service("/start_dynamic_graph")
     rospy.loginfo("...ok")
 
-    runCommandClient = rospy.ServiceProxy('run_command', RunCommand)
-    runCommandStartDynamicGraph = rospy.ServiceProxy('start_dynamic_graph', Empty)
+    runCommandClient = rospy.ServiceProxy("run_command", RunCommand)
+    runCommandStartDynamicGraph = rospy.ServiceProxy("start_dynamic_graph", Empty)
 
     initCode = open("appli_seq_play.py", "r").read().split("\n")
 
     rospy.loginfo("Stack of Tasks launched")
 
-    launchScript(initCode, 'initialize SoT')
+    launchScript(initCode, "initialize SoT")
     input("Wait before starting the dynamic graph")
     runCommandStartDynamicGraph()
 

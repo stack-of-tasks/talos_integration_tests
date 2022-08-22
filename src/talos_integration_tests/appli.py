@@ -3,11 +3,13 @@ from numpy import array, eye
 
 
 def init_appli(robot):
-    taskRH = MetaTaskKine6d('rh', robot.dynamic, 'rh', robot.OperationalPointsMap['right-wrist'])
+    taskRH = MetaTaskKine6d(
+        "rh", robot.dynamic, "rh", robot.OperationalPointsMap["right-wrist"]
+    )
     handMgrip = eye(4)
     handMgrip[0:3, 3] = (0.1, 0, 0)
     taskRH.opmodif = array(handMgrip)
-    taskRH.feature.frame('desired')
+    taskRH.feature.frame("desired")
     # --- STATIC COM (if not walking)
     taskCom = MetaTaskKineCom(robot.dynamic)
     robot.dynamic.com.recompute(0)
@@ -15,29 +17,36 @@ def init_appli(robot):
     taskCom.task.controlGain.value = 10
 
     # --- CONTACTS
-    contactLF = MetaTaskKine6d('contactLF', robot.dynamic, 'LF', robot.OperationalPointsMap['left-ankle'])
-    contactLF.feature.frame('desired')
+    contactLF = MetaTaskKine6d(
+        "contactLF", robot.dynamic, "LF", robot.OperationalPointsMap["left-ankle"]
+    )
+    contactLF.feature.frame("desired")
     contactLF.gain.setConstant(10)
     contactLF.keep()
-    locals()['contactLF'] = contactLF
+    locals()["contactLF"] = contactLF
 
-    contactRF = MetaTaskKine6d('contactRF', robot.dynamic, 'RF', robot.OperationalPointsMap['right-ankle'])
-    contactRF.feature.frame('desired')
+    contactRF = MetaTaskKine6d(
+        "contactRF", robot.dynamic, "RF", robot.OperationalPointsMap["right-ankle"]
+    )
+    contactRF.feature.frame("desired")
     contactRF.gain.setConstant(10)
     contactRF.keep()
-    locals()['contactRF'] = contactRF
+    locals()["contactRF"] = contactRF
 
     from dynamic_graph import plug
     from dynamic_graph.sot.core.sot import SOT
-    sot = SOT('sot')
+
+    sot = SOT("sot")
     sot.setSize(robot.dynamic.getDimension())
     plug(sot.control, robot.device.control)
 
     from dynamic_graph.ros import RosPublish
+
     ros_publish_state = RosPublish("ros_publish_state")
     ros_publish_state.add("vector", "state", "/sot_control/state")
     ros_publish_state.add_signals()
     from dynamic_graph import plug
+
     plug(robot.device.state, ros_publish_state.state)
     robot.device.after.addDownsampledSignal("ros_publish_state.trigger", 100)
 

@@ -2,6 +2,5 @@
 
   <!-- Launching the python test -->
   <test test-name="test_sot_talos_kine" pkg="talos_integration_tests" type="start_talos_gazebo_kine.py" time-limit="120.0" />
-  
-</launch>
 
+</launch>
