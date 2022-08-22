@@ -9,6 +9,5 @@
 
   <!-- Launching the python test -->
   <node name="test_kine_py" pkg="pyrene_integration_tests" type="test_kine.py" />
-  
-</launch>
 
+</launch>

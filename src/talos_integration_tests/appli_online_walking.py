@@ -12,7 +12,11 @@ from dynamic_graph.sot.core import Flags
 from dynamic_graph.sot.core.derivator import Derivator_of_Vector
 from dynamic_graph.sot.core.feature_posture import FeaturePosture
 from dynamic_graph.sot.core.matrix_util import matrixToTuple
-from dynamic_graph.sot.core.meta_tasks_kine import MetaTaskKine6d, MetaTaskKineCom, gotoNd
+from dynamic_graph.sot.core.meta_tasks_kine import (
+    MetaTaskKine6d,
+    MetaTaskKineCom,
+    gotoNd,
+)
 from dynamic_graph.sot.core.sot import SOT
 from dynamic_graph.sot.core.task import Task
 from dynamic_graph.sot.dynamic_pinocchio import DynamicPinocchio
@@ -29,7 +33,7 @@ def init_online_walking(robot):
     robot.timeStep = dt
 
     # --- Pendulum parameters
-    robot_name = 'robot'
+    robot_name = "robot"
     robot.dynamic.com.recompute(0)
     robotDim = robot.dynamic.getDimension()
     mass = robot.dynamic.data.mass[0]
@@ -41,9 +45,9 @@ def init_online_walking(robot):
     robot.param_server = create_parameter_server(param_server_conf, dt)
 
     # --- Initial feet and waist
-    robot.dynamic.createOpPoint('LF', robot.OperationalPointsMap['left-ankle'])
-    robot.dynamic.createOpPoint('RF', robot.OperationalPointsMap['right-ankle'])
-    robot.dynamic.createOpPoint('WT', robot.OperationalPointsMap['waist'])
+    robot.dynamic.createOpPoint("LF", robot.OperationalPointsMap["left-ankle"])
+    robot.dynamic.createOpPoint("RF", robot.OperationalPointsMap["right-ankle"])
+    robot.dynamic.createOpPoint("WT", robot.OperationalPointsMap["waist"])
     robot.dynamic.add_signals()
     robot.dynamic.LF.recompute(0)
     robot.dynamic.RF.recompute(0)
@@ -55,12 +59,12 @@ def init_online_walking(robot):
 
     # -------------------------- PATTERN GENERATOR --------------------------
 
-    robot.pg = PatternGenerator('pg')
+    robot.pg = PatternGenerator("pg")
 
     # MODIFIED WITH MY PATHS
-    talos_data_folder = rospack.get_path('jrl-walkgen')
-    robot.pg.setURDFpath(talos_data_folder + '/urdf/talos_reduced_wpg.urdf')
-    robot.pg.setSRDFpath(talos_data_folder + '/srdf/talos_wpg.srdf')
+    talos_data_folder = rospack.get_path("jrl-walkgen")
+    robot.pg.setURDFpath(talos_data_folder + "/urdf/talos_reduced_wpg.urdf")
+    robot.pg.setSRDFpath(talos_data_folder + "/srdf/talos_wpg.srdf")
     ## END MODIFIED
 
     robot.pg.buildModel()
@@ -68,9 +72,9 @@ def init_online_walking(robot):
     robot.pg.parseCmd(":samplingperiod 0.005")
     robot.pg.parseCmd(":previewcontroltime 1.6")
     robot.pg.parseCmd(":omega 0.0")
-    robot.pg.parseCmd(':stepheight 0.05')
-    robot.pg.parseCmd(':doublesupporttime 0.2')
-    robot.pg.parseCmd(':singlesupporttime 1.0')
+    robot.pg.parseCmd(":stepheight 0.05")
+    robot.pg.parseCmd(":doublesupporttime 0.2")
+    robot.pg.parseCmd(":singlesupporttime 1.0")
     robot.pg.parseCmd(":armparameters 0.5")
     robot.pg.parseCmd(":LimitsFeasibility 0.0")
     robot.pg.parseCmd(":ZMPShiftParameters 0.015 0.015 0.015 0.015")
@@ -83,7 +87,7 @@ def init_online_walking(robot):
 
     plug(robot.dynamic.position, robot.pg.position)
     plug(robot.dynamic.com, robot.pg.com)
-    #plug(robot.dynamic.com, robot.pg.comStateSIN)
+    # plug(robot.dynamic.com, robot.pg.comStateSIN)
     plug(robot.dynamic.LF, robot.pg.leftfootcurrentpos)
     plug(robot.dynamic.RF, robot.pg.rightfootcurrentpos)
     robotDim = len(robot.dynamic.velocity.value)
@@ -92,27 +96,29 @@ def init_online_walking(robot):
 
     robot.pg.initState()
 
-    robot.pg.parseCmd(':setDSFeetDistance 0.162')
+    robot.pg.parseCmd(":setDSFeetDistance 0.162")
 
-    robot.pg.parseCmd(':NaveauOnline')
-    robot.pg.parseCmd(':numberstepsbeforestop 2')
-    robot.pg.parseCmd(':setfeetconstraint XY 0.091 0.0489')
+    robot.pg.parseCmd(":NaveauOnline")
+    robot.pg.parseCmd(":numberstepsbeforestop 2")
+    robot.pg.parseCmd(":setfeetconstraint XY 0.091 0.0489")
 
-    robot.pg.parseCmd(':deleteallobstacles')
-    robot.pg.parseCmd(':feedBackControl false')
-    robot.pg.parseCmd(':useDynamicFilter true')
+    robot.pg.parseCmd(":deleteallobstacles")
+    robot.pg.parseCmd(":feedBackControl false")
+    robot.pg.parseCmd(":useDynamicFilter true")
 
-    robot.pg.velocitydes.value = np.array((0.1, 0.0, 0.0))  # DEFAULT VALUE (0.1,0.0,0.0)
+    robot.pg.velocitydes.value = np.array(
+        (0.1, 0.0, 0.0)
+    )  # DEFAULT VALUE (0.1,0.0,0.0)
 
     # -------------------------- TRIGGER --------------------------
 
-    robot.triggerPG = BooleanIdentity('triggerPG')
+    robot.triggerPG = BooleanIdentity("triggerPG")
     robot.triggerPG.sin.value = 0
     plug(robot.triggerPG.sout, robot.pg.trigger)
 
     # --------- Interface with controller entities -------------
 
-    wp = DummyWalkingPatternGenerator('dummy_wp')
+    wp = DummyWalkingPatternGenerator("dummy_wp")
     wp.init()
     # #wp.displaySignals()
     wp.omega.value = omega
@@ -141,15 +147,15 @@ def init_online_walking(robot):
     robot.imu_filters = create_imu_filters(robot, dt)
     robot.base_estimator = create_base_estimator(robot, dt, base_estimator_conf)
 
-    robot.m2qLF = MatrixHomoToPoseQuaternion('m2qLF')
+    robot.m2qLF = MatrixHomoToPoseQuaternion("m2qLF")
     plug(robot.dynamic.LF, robot.m2qLF.sin)
     plug(robot.m2qLF.sout, robot.base_estimator.lf_ref_xyzquat)
-    robot.m2qRF = MatrixHomoToPoseQuaternion('m2qRF')
+    robot.m2qRF = MatrixHomoToPoseQuaternion("m2qRF")
     plug(robot.dynamic.RF, robot.m2qRF.sin)
     plug(robot.m2qRF.sout, robot.base_estimator.rf_ref_xyzquat)
 
     # --- Conversion
-    e2q = EulerToQuat('e2q')
+    e2q = EulerToQuat("e2q")
     plug(robot.base_estimator.q, e2q.euler)
     robot.e2q = e2q
 
@@ -163,7 +169,7 @@ def init_online_walking(robot):
     robot.rdynamic.acceleration.value = np.zeros(robotDim)
 
     # --- CoM Estimation
-    cdc_estimator = DcmEstimator('cdc_estimator')
+    cdc_estimator = DcmEstimator("cdc_estimator")
     cdc_estimator.init(dt, robot_name)
     plug(robot.e2q.quaternion, cdc_estimator.q)
     plug(robot.base_estimator.v, cdc_estimator.v)
@@ -183,8 +189,8 @@ def init_online_walking(robot):
 
     # --- ZMP estimation
     zmp_estimator = SimpleZmpEstimator("zmpEst")
-    robot.rdynamic.createOpPoint('sole_LF', 'left_sole_link')
-    robot.rdynamic.createOpPoint('sole_RF', 'right_sole_link')
+    robot.rdynamic.createOpPoint("sole_LF", "left_sole_link")
+    robot.rdynamic.createOpPoint("sole_RF", "right_sole_link")
     robot.rdynamic.add_signals()
     plug(robot.rdynamic.sole_LF, zmp_estimator.poseLeft)
     plug(robot.rdynamic.sole_RF, zmp_estimator.poseRight)
@@ -238,16 +244,16 @@ def init_online_walking(robot):
     Kp_adm = np.array([15.0, 15.0, 0.0])  # this value is employed later
 
     # --- Control Manager
-    robot.cm = create_ctrl_manager(cm_conf, dt, robot_name='robot')
-    robot.cm.addCtrlMode('sot_input')
-    robot.cm.setCtrlMode('all', 'sot_input')
-    robot.cm.addEmergencyStopSIN('zmp')
+    robot.cm = create_ctrl_manager(cm_conf, dt, robot_name="robot")
+    robot.cm.addCtrlMode("sot_input")
+    robot.cm.setCtrlMode("all", "sot_input")
+    robot.cm.addEmergencyStopSIN("zmp")
 
     # -------------------------- SOT CONTROL --------------------------
 
     # --- Upper body
-    robot.taskUpperBody = Task('task_upper_body')
-    robot.taskUpperBody.feature = FeaturePosture('feature_upper_body')
+    robot.taskUpperBody = Task("task_upper_body")
+    robot.taskUpperBody.feature = FeaturePosture("feature_upper_body")
 
     q = robot.dynamic.position.value
     robot.taskUpperBody.feature.state.value = q
@@ -279,23 +285,27 @@ def init_online_walking(robot):
     plug(robot.dynamic.position, robot.taskUpperBody.feature.state)
 
     # --- CONTACTS
-    robot.contactLF = MetaTaskKine6d('contactLF', robot.dynamic, 'LF', robot.OperationalPointsMap['left-ankle'])
-    robot.contactLF.feature.frame('desired')
+    robot.contactLF = MetaTaskKine6d(
+        "contactLF", robot.dynamic, "LF", robot.OperationalPointsMap["left-ankle"]
+    )
+    robot.contactLF.feature.frame("desired")
     robot.contactLF.gain.setConstant(300)
-    plug(robot.wp.footLeftDes, robot.contactLF.featureDes.position)  #.errorIN?
-    locals()['contactLF'] = robot.contactLF
+    plug(robot.wp.footLeftDes, robot.contactLF.featureDes.position)  # .errorIN?
+    locals()["contactLF"] = robot.contactLF
 
-    robot.contactRF = MetaTaskKine6d('contactRF', robot.dynamic, 'RF', robot.OperationalPointsMap['right-ankle'])
-    robot.contactRF.feature.frame('desired')
+    robot.contactRF = MetaTaskKine6d(
+        "contactRF", robot.dynamic, "RF", robot.OperationalPointsMap["right-ankle"]
+    )
+    robot.contactRF.feature.frame("desired")
     robot.contactRF.gain.setConstant(300)
-    plug(robot.wp.footRightDes, robot.contactRF.featureDes.position)  #.errorIN?
-    locals()['contactRF'] = robot.contactRF
+    plug(robot.wp.footRightDes, robot.contactRF.featureDes.position)  # .errorIN?
+    locals()["contactRF"] = robot.contactRF
 
     # --- COM height
-    robot.taskComH = MetaTaskKineCom(robot.dynamic, name='comH')
+    robot.taskComH = MetaTaskKineCom(robot.dynamic, name="comH")
     plug(robot.wp.comDes, robot.taskComH.featureDes.errorIN)
-    robot.taskComH.task.controlGain.value = 100.
-    robot.taskComH.feature.selec.value = Flags('001')
+    robot.taskComH.task.controlGain.value = 100.0
+    robot.taskComH.feature.selec.value = Flags("001")
 
     # --- COM
     robot.taskCom = MetaTaskKineCom(robot.dynamic)
@@ -303,19 +313,21 @@ def init_online_walking(robot):
     plug(robot.com_admittance_control.dcomRef, robot.taskCom.featureDes.errordotIN)
     robot.taskCom.task.controlGain.value = 0
     robot.taskCom.task.setWithDerivative(True)
-    robot.taskCom.feature.selec.value = Flags('110')
+    robot.taskCom.feature.selec.value = Flags("110")
 
     # --- Waist
 
-    robot.keepWaist = MetaTaskKine6d('keepWaist', robot.dynamic, 'WT', robot.OperationalPointsMap['waist'])
-    robot.keepWaist.feature.frame('desired')
+    robot.keepWaist = MetaTaskKine6d(
+        "keepWaist", robot.dynamic, "WT", robot.OperationalPointsMap["waist"]
+    )
+    robot.keepWaist.feature.frame("desired")
     robot.keepWaist.gain.setConstant(300)
-    plug(robot.wp.waistDes, robot.keepWaist.featureDes.position)  #de base
-    robot.keepWaist.feature.selec.value = Flags('000111')
-    locals()['keepWaist'] = robot.keepWaist
+    plug(robot.wp.waistDes, robot.keepWaist.featureDes.position)  # de base
+    robot.keepWaist.feature.selec.value = Flags("000111")
+    locals()["keepWaist"] = robot.keepWaist
 
     # --- SOT solver
-    robot.sot = SOT('sot')
+    robot.sot = SOT("sot")
     robot.sot.setSize(robot.dynamic.getDimension())
 
     # --- Plug SOT control to device through control manager
@@ -343,51 +355,76 @@ def init_online_walking(robot):
 
     ## THIS PARAGRAPH QUITE DIFFERENT, TO CHECK
 
-    robot.publisher = create_rospublish(robot, 'robot_publisher')
+    robot.publisher = create_rospublish(robot, "robot_publisher")
 
     ## ADDED
-    create_topic(robot.publisher, robot.pg, 'comref', robot=robot, data_type='vector')  # desired CoM
-    create_topic(robot.publisher, robot.pg, 'dcomref', robot=robot, data_type='vector')
+    create_topic(
+        robot.publisher, robot.pg, "comref", robot=robot, data_type="vector"
+    )  # desired CoM
+    create_topic(robot.publisher, robot.pg, "dcomref", robot=robot, data_type="vector")
 
-    create_topic(robot.publisher, robot.wp, 'waist', robot=robot, data_type='matrixHomo')
-    create_topic(robot.publisher, robot.keepWaist.featureDes, 'position', robot=robot, data_type='matrixHomo')
-    create_topic(robot.publisher, robot.dynamic, 'WT', robot=robot, data_type='matrixHomo')
-    create_topic(robot.publisher, robot.pg, 'waistattitudematrixabsolute', robot=robot,
-                 data_type='matrixHomo')  ## que font ces lignes exactement ??
+    create_topic(
+        robot.publisher, robot.wp, "waist", robot=robot, data_type="matrixHomo"
+    )
+    create_topic(
+        robot.publisher,
+        robot.keepWaist.featureDes,
+        "position",
+        robot=robot,
+        data_type="matrixHomo",
+    )
+    create_topic(
+        robot.publisher, robot.dynamic, "WT", robot=robot, data_type="matrixHomo"
+    )
+    create_topic(
+        robot.publisher,
+        robot.pg,
+        "waistattitudematrixabsolute",
+        robot=robot,
+        data_type="matrixHomo",
+    )  ## que font ces lignes exactement ??
 
-    create_topic(robot.publisher, robot.pg, 'leftfootref', robot=robot, data_type='matrixHomo')
-    create_topic(robot.publisher, robot.wp, 'footLeft', robot=robot, data_type='matrixHomo')
-    create_topic(robot.publisher, robot.pg, 'rightfootref', robot=robot, data_type='matrixHomo')
-    create_topic(robot.publisher, robot.wp, 'footRight', robot=robot, data_type='matrixHomo')
+    create_topic(
+        robot.publisher, robot.pg, "leftfootref", robot=robot, data_type="matrixHomo"
+    )
+    create_topic(
+        robot.publisher, robot.wp, "footLeft", robot=robot, data_type="matrixHomo"
+    )
+    create_topic(
+        robot.publisher, robot.pg, "rightfootref", robot=robot, data_type="matrixHomo"
+    )
+    create_topic(
+        robot.publisher, robot.wp, "footRight", robot=robot, data_type="matrixHomo"
+    )
 
     ## --- TRACER
     robot.tracer = TracerRealTime("com_tracer")
     robot.tracer.setBufferSize(80 * (2**20))
-    robot.tracer.open('/tmp', 'dg_', '.dat')
+    robot.tracer.open("/tmp", "dg_", ".dat")
 
-    robot.device.after.addSignal('{0}.triger'.format(robot.tracer.name))
+    robot.device.after.addSignal("{0}.triger".format(robot.tracer.name))
 
-    addTrace(robot.tracer, robot.pg, 'waistattitudeabsolute')
+    addTrace(robot.tracer, robot.pg, "waistattitudeabsolute")
     # fin
 
-    addTrace(robot.tracer, robot.wp, 'comDes')  # desired CoM
+    addTrace(robot.tracer, robot.wp, "comDes")  # desired CoM
 
-    addTrace(robot.tracer, robot.cdc_estimator, 'c')  # estimated CoM
-    addTrace(robot.tracer, robot.cdc_estimator, 'dc')  # estimated CoM velocity
+    addTrace(robot.tracer, robot.cdc_estimator, "c")  # estimated CoM
+    addTrace(robot.tracer, robot.cdc_estimator, "dc")  # estimated CoM velocity
 
-    addTrace(robot.tracer, robot.pg, 'comref')
-    addTrace(robot.tracer, robot.pg, 'dcomref')
-    addTrace(robot.tracer, robot.pg, 'ddcomref')
+    addTrace(robot.tracer, robot.pg, "comref")
+    addTrace(robot.tracer, robot.pg, "dcomref")
+    addTrace(robot.tracer, robot.pg, "ddcomref")
 
-    addTrace(robot.tracer, robot.pg, 'rightfootref')
-    addTrace(robot.tracer, robot.pg, 'leftfootref')
+    addTrace(robot.tracer, robot.pg, "rightfootref")
+    addTrace(robot.tracer, robot.pg, "leftfootref")
 
-    addTrace(robot.tracer, robot.pg, 'rightfootcontact')
-    addTrace(robot.tracer, robot.pg, 'leftfootcontact')
-    addTrace(robot.tracer, robot.pg, 'SupportFoot')
+    addTrace(robot.tracer, robot.pg, "rightfootcontact")
+    addTrace(robot.tracer, robot.pg, "leftfootcontact")
+    addTrace(robot.tracer, robot.pg, "SupportFoot")
 
-    addTrace(robot.tracer, robot.dynamic, 'com')  # resulting SOT CoM
-    addTrace(robot.tracer, robot.dynamic, 'LF')  # left foot
-    addTrace(robot.tracer, robot.dynamic, 'RF')  # right foot
+    addTrace(robot.tracer, robot.dynamic, "com")  # resulting SOT CoM
+    addTrace(robot.tracer, robot.dynamic, "LF")  # left foot
+    addTrace(robot.tracer, robot.dynamic, "RF")  # right foot
 
     robot.tracer.start()

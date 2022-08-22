@@ -16,45 +16,59 @@ def handleRunCommandClient(code):
         sys.exit(-1)
 
 
-PKG_NAME = 'talos_integration_tests'
-'''Test CoM admittance control as described in paper, with pre-loaded movements'''
+PKG_NAME = "talos_integration_tests"
+"""Test CoM admittance control as described in paper, with pre-loaded movements"""
 
 # get the file path for rospy_tutorials
-appli_file_name = join(dirname(abspath(__file__)), 'appli_dcmZmpControl_file.py')
+appli_file_name = join(dirname(abspath(__file__)), "appli_dcmZmpControl_file.py")
 
 time.sleep(2)
 rospy.loginfo("Stack of Tasks launched")
 
-test_folder = 'TestKajita2003StraightWalking64/20cm'
-print('Using folder ' + test_folder)
+test_folder = "TestKajita2003StraightWalking64/20cm"
+print("Using folder " + test_folder)
 
 rospy.loginfo("Waiting for run_command")
-rospy.wait_for_service('/run_command')
+rospy.wait_for_service("/run_command")
 rospy.loginfo("...ok")
 
 handleRunCommandClient('test_folder = "' + test_folder + '"')
 
-handleRunCommandClient('from talos_integration_tests.appli_dcmZmpControl_file import init_sot_talos_balance')
-handleRunCommandClient('init_sot_talos_balance(robot,\'' + test_folder + '\')')
+handleRunCommandClient(
+    "from talos_integration_tests.appli_dcmZmpControl_file "
+    "import init_sot_talos_balance"
+)
+handleRunCommandClient("init_sot_talos_balance(robot,'" + test_folder + "')")
 time.sleep(5)
-runCommandStartDynamicGraph = rospy.ServiceProxy('start_dynamic_graph', Empty)
+runCommandStartDynamicGraph = rospy.ServiceProxy("start_dynamic_graph", Empty)
 
 runCommandStartDynamicGraph()
 time.sleep(5)
 # Connect ZMP reference and reset controllers
-print('Connect ZMP reference')
-handleRunCommandClient('from dynamic_graph import plug')
-handleRunCommandClient('import numpy as np')
-handleRunCommandClient('plug(robot.zmp_estimator.emergencyStop,robot.cm.emergencyStop_zmp)')
-handleRunCommandClient('plug(robot.dcm_control.zmpRef,robot.com_admittance_control.zmpDes)')
-handleRunCommandClient('robot.com_admittance_control.setState(robot.wp.comDes.value,np.array([0.0,0.0,0.0]))')
-handleRunCommandClient('Kp_adm = np.array([15.0, 15.0, 0.0])')  # this value is employed later
-handleRunCommandClient('robot.com_admittance_control.Kp.value = Kp_adm')
-handleRunCommandClient('robot.dcm_control.resetDcmIntegralError()')
-handleRunCommandClient('Ki_dcm = np.array([1.0, 1.0, 1.0])')  # this value is employed later
-handleRunCommandClient('robot.dcm_control.Ki.value = Ki_dcm')
+print("Connect ZMP reference")
+handleRunCommandClient("from dynamic_graph import plug")
+handleRunCommandClient("import numpy as np")
+handleRunCommandClient(
+    "plug(robot.zmp_estimator.emergencyStop,robot.cm.emergencyStop_zmp)"
+)
+handleRunCommandClient(
+    "plug(robot.dcm_control.zmpRef,robot.com_admittance_control.zmpDes)"
+)
+handleRunCommandClient(
+    "robot.com_admittance_control.setState("
+    "robot.wp.comDes.value,np.array([0.0,0.0,0.0]))"
+)
+handleRunCommandClient(
+    "Kp_adm = np.array([15.0, 15.0, 0.0])"
+)  # this value is employed later
+handleRunCommandClient("robot.com_admittance_control.Kp.value = Kp_adm")
+handleRunCommandClient("robot.dcm_control.resetDcmIntegralError()")
+handleRunCommandClient(
+    "Ki_dcm = np.array([1.0, 1.0, 1.0])"
+)  # this value is employed later
+handleRunCommandClient("robot.dcm_control.Ki.value = Ki_dcm")
 
-print('Executing the trajectory')
+print("Executing the trajectory")
 time.sleep(1)
-handleRunCommandClient('robot.triggerTrajGen.sin.value = 1')
+handleRunCommandClient("robot.triggerTrajGen.sin.value = 1")
 time.sleep(45)

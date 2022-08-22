@@ -17,18 +17,18 @@ def handleRunCommandClient(code):
         sys.exit(-1)
 
 
-PKG_NAME = 'talos_integration_tests'
-'''Test online walking pattern generator'''
+PKG_NAME = "talos_integration_tests"
+"""Test online walking pattern generator"""
 
 
 def wait_for_dynamic_graph():
     try:
         rospy.loginfo("Waiting for run_command")
-        rospy.wait_for_service('/run_command')
+        rospy.wait_for_service("/run_command")
         rospy.loginfo("...ok")
 
         rospy.loginfo("Waiting for start_dynamic_graph")
-        rospy.wait_for_service('/start_dynamic_graph')
+        rospy.wait_for_service("/start_dynamic_graph")
         rospy.loginfo("...ok")
 
     except rospy.ServiceException as e:
@@ -42,16 +42,18 @@ rospack = rospkg.RosPack()
 lpath = rospack.get_path(PKG_NAME)
 print(lpath)
 
-appli_file_name = lpath + '/../../lib/' + PKG_NAME + '/appli_online_walking.py'
+appli_file_name = lpath + "/../../lib/" + PKG_NAME + "/appli_online_walking.py"
 
-runCommandStartDynamicGraph = rospy.ServiceProxy('start_dynamic_graph', Empty)
+runCommandStartDynamicGraph = rospy.ServiceProxy("start_dynamic_graph", Empty)
 rospy.loginfo("Stack of Tasks launched")
 
 wait_for_dynamic_graph()
 rospy.loginfo("Wait before running the code")
 
-handleRunCommandClient('from talos_integration_tests.appli_online_walking import init_online_walking')
-handleRunCommandClient('init_online_walking(robot)')
+handleRunCommandClient(
+    "from talos_integration_tests.appli_online_walking import init_online_walking"
+)
+handleRunCommandClient("init_online_walking(robot)")
 
 rospy.loginfo("Wait before starting the dynamic graph")
 runCommandStartDynamicGraph()
@@ -62,28 +64,43 @@ rospy.loginfo("Stack of Tasks launched")
 time.sleep(5)
 
 # Connect ZMP reference and reset controllers
-print('Connect ZMP reference')
-handleRunCommandClient('from dynamic_graph import plug')
-handleRunCommandClient('import numpy as np')
-handleRunCommandClient('plug(robot.zmp_estimator.emergencyStop,robot.cm.emergencyStop_zmp)')
-handleRunCommandClient('plug(robot.dcm_control.zmpRef,robot.com_admittance_control.zmpDes)')
-handleRunCommandClient('robot.com_admittance_control.setState(robot.wp.comDes.value,np.array([0.0,0.0,0.0]))')
-handleRunCommandClient('Kp_adm = np.array([15.0, 15.0, 0.0])')  # this value is employed later
-handleRunCommandClient('robot.com_admittance_control.Kp.value = Kp_adm')
-handleRunCommandClient('robot.dcm_control.resetDcmIntegralError()')
-handleRunCommandClient('Ki_dcm = np.array([1.0, 1.0, 1.0])')  # this value is employed later
-handleRunCommandClient('robot.dcm_control.Ki.value = Ki_dcm')
+print("Connect ZMP reference")
+handleRunCommandClient("from dynamic_graph import plug")
+handleRunCommandClient("import numpy as np")
+handleRunCommandClient(
+    "plug(robot.zmp_estimator.emergencyStop,robot.cm.emergencyStop_zmp)"
+)
+handleRunCommandClient(
+    "plug(robot.dcm_control.zmpRef,robot.com_admittance_control.zmpDes)"
+)
+handleRunCommandClient(
+    "robot.com_admittance_control.setState("
+    "robot.wp.comDes.value,"
+    "np.array([0.0, 0.0, 0.0]),"
+    ")"
+)
+handleRunCommandClient(
+    "Kp_adm = np.array([15.0, 15.0, 0.0])"
+)  # this value is employed later
+handleRunCommandClient("robot.com_admittance_control.Kp.value = Kp_adm")
+handleRunCommandClient("robot.dcm_control.resetDcmIntegralError()")
+handleRunCommandClient(
+    "Ki_dcm = np.array([1.0, 1.0, 1.0])"
+)  # this value is employed later
+handleRunCommandClient("robot.dcm_control.Ki.value = Ki_dcm")
 
-print('Executing the trajectory')
-handleRunCommandClient('robot.triggerPG.sin.value = 1')
+print("Executing the trajectory")
+handleRunCommandClient("robot.triggerPG.sin.value = 1")
 
 time.sleep(4)
-handleRunCommandClient('robot.pg.velocitydes.value=np.array((0.2,0.0,0.0))')
+handleRunCommandClient("robot.pg.velocitydes.value=np.array((0.2,0.0,0.0))")
 time.sleep(7)
-handleRunCommandClient('robot.pg.velocitydes.value=np.array((0.3,0.0,0.0))')
+handleRunCommandClient("robot.pg.velocitydes.value=np.array((0.3,0.0,0.0))")
 time.sleep(9)
-handleRunCommandClient('robot.pg.velocitydes.value=np.array((0.0,0.0,0.0))')
+handleRunCommandClient("robot.pg.velocitydes.value=np.array((0.0,0.0,0.0))")
 
 time.sleep(9)
-handleRunCommandClient('from sot_talos_balance.create_entities_utils import dump_tracer')
-handleRunCommandClient('dump_tracer(robot.tracer)')
+handleRunCommandClient(
+    "from sot_talos_balance.create_entities_utils import dump_tracer"
+)
+handleRunCommandClient("dump_tracer(robot.tracer)")
