@@ -74,7 +74,10 @@ handleRunCommandClient(
     "plug(robot.dcm_control.zmpRef,robot.com_admittance_control.zmpDes)"
 )
 handleRunCommandClient(
-    "robot.com_admittance_control.setState(robot.wp.comDes.value,np.array([0.0,0.0,0.0]))"
+    "robot.com_admittance_control.setState("
+    "robot.wp.comDes.value,"
+    "np.array([0.0, 0.0, 0.0]),"
+    ")"
 )
 handleRunCommandClient(
     "Kp_adm = np.array([15.0, 15.0, 0.0])"

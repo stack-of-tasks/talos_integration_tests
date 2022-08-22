@@ -35,7 +35,8 @@ rospy.loginfo("...ok")
 handleRunCommandClient('test_folder = "' + test_folder + '"')
 
 handleRunCommandClient(
-    "from talos_integration_tests.appli_dcmZmpControl_file import init_sot_talos_balance"
+    "from talos_integration_tests.appli_dcmZmpControl_file "
+    "import init_sot_talos_balance"
 )
 handleRunCommandClient("init_sot_talos_balance(robot,'" + test_folder + "')")
 time.sleep(5)
@@ -54,7 +55,8 @@ handleRunCommandClient(
     "plug(robot.dcm_control.zmpRef,robot.com_admittance_control.zmpDes)"
 )
 handleRunCommandClient(
-    "robot.com_admittance_control.setState(robot.wp.comDes.value,np.array([0.0,0.0,0.0]))"
+    "robot.com_admittance_control.setState("
+    "robot.wp.comDes.value,np.array([0.0,0.0,0.0]))"
 )
 handleRunCommandClient(
     "Kp_adm = np.array([15.0, 15.0, 0.0])"

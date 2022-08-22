@@ -43,7 +43,9 @@ def runTest():
             "from dynamic_graph.sot.core.meta_tasks_kine import MetaTaskKine6d"
         )
         handleRunCommandClient(
-            "robot.taskRH  = MetaTaskKine6d('rh',robot.dynamic,'rh',robot.OperationalPointsMap['right-wrist'])"
+            "robot.taskRH = MetaTaskKine6d("
+            "'rh', robot.dynamic, 'rh', robot.OperationalPointsMap['right-wrist']"
+            ")"
         )
         handleRunCommandClient("from dynamic_graph.sot.core.sot import SOT")
         handleRunCommandClient("robot.sot = SOT('sot')")
