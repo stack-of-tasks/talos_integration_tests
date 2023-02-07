@@ -115,7 +115,6 @@ class TestSoTTalos(unittest.TestCase):
         while not rospy.is_shutdown():
             # Test if sot_talos_balance is finished or not
             if not test_kine_process.is_alive():
-
                 self.validation_through_gazebo()
 
                 # If it is finished then find exit status.
